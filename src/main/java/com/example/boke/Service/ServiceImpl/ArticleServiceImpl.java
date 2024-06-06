@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
@@ -49,6 +50,11 @@ public class ArticleServiceImpl implements ArticleService {
     public ArrayList<ArticleDetailsDto> getArticles(int page, int size) {
         int offset = (page - 1) * size;
         return articleMapper.getArticles(offset,size);
+    }
+
+    @Override
+    public List<ArticleDetailsDto> getArticlesByLabels(List<String> labelList) {
+        return articleMapper.getArticlesByLabels(labelList);
     }
 
 

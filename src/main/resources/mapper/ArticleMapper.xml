@@ -111,4 +111,32 @@
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
+    <select id="getArticlesByLabels" resultMap="ArticleDetailResultMap">
+        SELECT
+        a.article_id,a.article_title,a.article_content,MAX(a.article_date) as latest_article_date,
+        u.user_id as author_id,u.user_name as author_name,u.user_profile_photo as author_photo,
+        MAX(c.comment_id) as latest_comment_id,MAX(c.comment_content) as latest_comment_content,MAX(c.comment_date) as latest_comment_date,
+        cu.user_id as commenter_id,cu.user_name as commenter_name,cu.user_profile_photo as commenter_photo,
+        l.label_id,l.label_name
+        FROM
+            articles a
+        JOIN user u ON a.user_id = u.user_id
+        LEFT JOIN comments c ON a.article_id = c.article_id
+        LEFT JOIN user cu ON c.user_id = cu.user_id
+        LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
+        LEFT JOIN labels l ON sal.label_id = l.label_id
+        WHERE
+        l.label_name IN
+        <foreach item="label" collection="labels" open="(" separator="," close=")">
+            #{label}
+        </foreach>
+        GROUP BY
+        a.article_id, a.article_title, a.article_content,
+        u.user_id, u.user_name, u.user_profile_photo,
+        cu.user_id, cu.user_name, cu.user_profile_photo,
+        l.label_id, l.label_name
+        ORDER BY
+        latest_article_date DESC
+    </select>
+
 </mapper>

@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 @Slf4j
@@ -59,7 +61,7 @@ public class ArticleController {
         return Result.success(list);
     }
 
-    //分页查询，每页5条
+    //分页查询，每页5条（主页）
     @GetMapping("/getArticles")
     public Result getArticles(@RequestParam(defaultValue = "1") int page,
                               @RequestParam(defaultValue = "5") int size){
@@ -68,9 +70,14 @@ public class ArticleController {
         return Result.success(list);
     }
 
-    //带某个标签的所有文章
+    //带某些标签的所有文章(标签用 , 进行分割)
     @GetMapping("/getLabels")
-    public Result getLabels(){
-        return null;
+    public Result getLabels(@RequestParam("labels") String labels){
+        List<String> labelList = Arrays.asList(labels.split(","));
+        List<ArticleDetailsDto> articles= articleService.getArticlesByLabels(labelList);
+        log.info("查看带这些标签{}的所有文章：{}",labelList,articles);
+        return Result.success(articles);
     }
+
+
 }

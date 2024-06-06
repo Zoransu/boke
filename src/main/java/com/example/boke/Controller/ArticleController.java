@@ -65,6 +65,7 @@ public class ArticleController {
     public Result getArticles(@RequestParam(defaultValue = "1") int page,
                               @RequestParam(defaultValue = "5") int size){
         ArrayList<ArticleDetailsDto> list=articleService.getArticles(page,size);
-            return Result.success(list);
+        log.info("查看第{}页的文章：{}",page,list);
+        return Result.success(list);
     }
 }

@@ -44,7 +44,6 @@ public class ArticleController {
         return Result.success(articleService.getArticleDetails(articleId));
     }
 
-
     @GetMapping("/getLastTen")
     public Result getLastTen(){
         ArrayList<ArticleDetailsDto> list=articleService.getLastTen();
@@ -67,5 +66,11 @@ public class ArticleController {
         ArrayList<ArticleDetailsDto> list=articleService.getArticles(page,size);
         log.info("查看第{}页的文章：{}",page,list);
         return Result.success(list);
+    }
+
+    //带某个标签的所有文章
+    @GetMapping("/getLabels")
+    public Result getLabels(){
+        return null;
     }
 }

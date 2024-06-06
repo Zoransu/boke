@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.boke.Mapper.ArticleMapper">
+    <!-- 插入文章 -->
+    <insert id="createArticle" parameterType="com.example.boke.pojo.Article" useGeneratedKeys="true" keyProperty="articleId">
+        INSERT INTO articles (user_id, article_title, article_content, article_comment_count, article_date, article_like_count)
+        VALUES (#{userId}, #{articleTitle}, #{articleContent}, #{articleCommentCount}, #{articleDate}, #{articleLikeCount})
+    </insert>
+
+    <!-- 文章关联标签 -->
+    <insert id="assignLabelToArticle">
+        INSERT INTO set_article_label (article_id, label_id)
+        VALUES (#{articleId}, #{labelId})
+    </insert>
+
+    <!--整合文章信息-->
+    <resultMap id="ArticleDetailResultMap" type="com.example.boke.Dto.ArticleDetailsDto">
+        <id property="articleId" column="article_id" />
+        <result property="articleTitle" column="article_title" />
+        <result property="articleContent" column="article_content" />
+        <result property="articleDate" column="article_date" />
+
+        <association property="author" javaType="com.example.boke.Dto.ArticleDetailsDto$User">
+            <id property="userId" column="author_id" />
+            <result property="userName" column="author_name" />
+            <result property="userProfilePhoto" column="author_photo" />
+        </association>
+
+        <collection property="comments" ofType="com.example.boke.Dto.ArticleDetailsDto$Comment">
+            <id property="commentId" column="comment_id" />
+            <result property="commentContent" column="comment_content" />
+            <result property="commentDate" column="comment_date" />
+            <association property="commenter" javaType="com.example.boke.Dto.ArticleDetailsDto$User">
+                <id property="userId" column="commenter_id" />
+                <result property="userName" column="commenter_name" />
+                <result property="userProfilePhoto" column="commenter_photo" />
+            </association>
+        </collection>
+
+        <collection property="labels" ofType="com.example.boke.Dto.ArticleDetailsDto$Label">
+            <id property="labelId" column="label_id" />
+            <result property="labelName" column="label_name" />
+        </collection>
+    </resultMap>
+
+    <!--查看文章详细信息-->
+    <select id="findArticleDetailsById" resultMap="ArticleDetailResultMap">
+        SELECT
+            a.article_id, a.article_title, a.article_content, a.article_date,
+            u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
+            c.comment_id, c.comment_content, c.comment_date, cu.user_id as commenter_id, cu.user_name as commenter_name,
+            l.label_id, l.label_name
+        FROM articles a
+                 LEFT JOIN user u ON a.user_id = u.user_id
+                 LEFT JOIN comments c ON a.article_id = c.article_id
+                 LEFT JOIN user cu ON c.user_id = cu.user_id
+                 LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
+                 LEFT JOIN labels l ON sal.label_id = l.label_id
+        WHERE a.article_id = #{articleId}
+    </select>
+
+    <!--查看最近十条-->
+    <select id="getLastTen" resultMap="ArticleDetailResultMap">
+        SELECT
+            a.article_id, a.article_title, a.article_content, a.article_date,
+            u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
+            c.comment_id, c.comment_content, c.comment_date, cu.user_id as commenter_id, cu.user_name as commenter_name,
+            l.label_id, l.label_name
+        FROM articles a
+                 LEFT JOIN user u ON a.user_id = u.user_id
+                 LEFT JOIN comments c ON a.article_id = c.article_id
+                 LEFT JOIN user cu ON c.user_id = cu.user_id
+                 LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
+                 LEFT JOIN labels l ON sal.label_id = l.label_id
+        ORDER BY a.article_date DESC
+        LIMIT 10
+    </select>
+
+
+    <!--使用权重计算并将结果进行分组,查询前十热点文章-->
+    <select id="getHotTen" resultMap="ArticleDetailResultMap">
+        SELECT
+            a.article_id, a.article_title, a.article_content, a.article_date,
+            u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
+            c.comment_id, c.comment_content, c.comment_date, cu.user_id as commenter_id, cu.user_name as commenter_name,
+            l.label_id, l.label_name
+        FROM articles a
+                 LEFT JOIN user u ON a.user_id = u.user_id
+                 LEFT JOIN comments c ON a.article_id = c.article_id
+                 LEFT JOIN user cu ON c.user_id = cu.user_id
+                 LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
+                 LEFT JOIN labels l ON sal.label_id = l.label_id
+        ORDER BY (a.article_comment_count * 2 + a.article_like_count) DESC, a.article_date DESC
+        LIMIT 10
+    </select>
+
+    <select id="getArticles" resultMap="ArticleDetailResultMap">
+        SELECT
+            a.article_id, a.article_title, a.article_content, a.article_date,
+            u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
+            c.comment_id, c.comment_content, c.comment_date, cu.user_id as commenter_id, cu.user_name as commenter_name,
+            l.label_id, l.label_name
+        FROM articles a
+                 LEFT JOIN user u ON a.user_id = u.user_id
+                 LEFT JOIN comments c ON a.article_id = c.article_id
+                 LEFT JOIN user cu ON c.user_id = cu.user_id
+                 LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
+                 LEFT JOIN labels l ON sal.label_id = l.label_id
+        ORDER BY article_date DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+
+</mapper>

@@ -11,9 +11,11 @@ import com.example.boke.utils.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,7 +92,23 @@ public class UserController {
             log.error("信息获取失败: {}", e.getMessage());
             return Result.error("信息获取失败：" + e.getMessage());
         }
-
     }
 
+    @PostMapping("/upload-avatar")
+    public Result uploadAvatar(HttpServletRequest request,@RequestParam("file") MultipartFile file){
+        try {
+            // 从请求属性中获取用户ID
+            Long userId = (Long) request.getAttribute("userId");
+            if (userId == null) {
+                return Result.error("用户未登录或会话已过期");
+            }
+            String fileDownloadUri = userService.storeFile(file, userId.toString());
+            userService.updateUserProfilePhoto(userId,fileDownloadUri);
+            log.info("{}上传头像成功，uri为：{}",userId,fileDownloadUri);
+            return Result.success("上传头像成功");
+        } catch (IOException e) {
+            log.error("上传头像失败: {}", e.getMessage());
+            return Result.error("上传头像失败：" + e.getMessage());
+        }
+    }
 }

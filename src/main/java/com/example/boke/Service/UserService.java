@@ -2,6 +2,9 @@ package com.example.boke.Service;
 
 import com.example.boke.Dto.UserStatisticsDto;
 import com.example.boke.pojo.User;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface UserService {
 
@@ -12,4 +15,8 @@ public interface UserService {
     void updateUer(User user);
 
     UserStatisticsDto getUserStatistics(Long userId);
+
+    String storeFile(MultipartFile file, String toString) throws IOException;
+
+    void updateUserProfilePhoto(Long userId, String fileDownloadUri);
 }

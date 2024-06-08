@@ -1,28 +1,60 @@
 package com.example.boke.Config;
 
+import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+@Slf4j
 @Configuration
-public class SpringMvcConfig implements WebMvcConfigurer {
+@EnableSwagger2
+@EnableKnife4j
+public class SpringMvcConfig extends WebMvcConfigurationSupport {
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                // 放行哪些域名，可以多个
                 .allowedOriginPatterns("*")
-                // 是否发送Cookie信息
                 .allowCredentials(true)
-                // 允许的模式
-                .allowedOriginPatterns("*")
-                // 放行哪些请求方式
                 .allowedMethods("GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
-                // 放行哪些原始域(头部信息)
                 .allowedHeaders("*");
-                // 暴露哪些头部信息（因为跨域访问默认不能获取全部头部信息）
-//                .exposedHeaders("Header1", "Header2")
-                // 预请求的结果有效期，默认1800分钟,3600是一小时
-//                .maxAge(3600);
     }
 
+    @Bean
+    public Docket createRestApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.example.boke.Controller"))
+                .paths(PathSelectors.any())
+                .build();
+    }
+
+    private ApiInfo apiInfo() {
+        return new ApiInfoBuilder()
+                .title("博客 API 文档")
+                .description("api文档")
+                .version("1.0")
+                .build();
+    }
+
+    @Override
+    protected void addResourceHandlers(ResourceHandlerRegistry registry) {
+        log.info("开始设置静态资源映射..");
+        registry.addResourceHandler("/doc.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+        super.addResourceHandlers(registry);
+    }
 }

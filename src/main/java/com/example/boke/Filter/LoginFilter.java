@@ -15,22 +15,23 @@ import java.io.IOException;
 //@Component
 @WebFilter(urlPatterns = "/*")
 public class LoginFilter implements Filter {
-    @Override//每次拦截都会用到
+    @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
-        HttpServletRequest request =(HttpServletRequest) servletRequest;
-        HttpServletResponse response=(HttpServletResponse) servletResponse;
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
         String url = request.getRequestURL().toString();
-        if(url.contains("login")||url.contains("register")){
-            filterChain.doFilter(servletRequest,servletResponse);
+
+        // 放行登录、注册以及Swagger相关资源
+        if (url.contains("login") || url.contains("register") ||
+                url.matches("(?i).*(css|jpg|png|gif|js|swagger-ui.html|swagger-resources|v2/api-docs|v3/api-docs|webjars).*")) {
+            filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
 
         String jwt = request.getHeader("token");
-        if(!StringUtils.hasLength(jwt)){
-            Result err = Result.error("未登录");
-            String json = JSONObject.toJSONString(err);
-            response.getWriter().write(json);
+        if (!StringUtils.hasLength(jwt)) {
+            writeErrorResponse(response, "未登录", HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
         try {
@@ -38,14 +39,15 @@ public class LoginFilter implements Filter {
             Long userId = JwtUtils.extractUserId(jwt);
             request.setAttribute("userId", userId);
         } catch (Exception e) {
-            writeErrorResponse(response, "JWT验证失败: " + e.getMessage());
+            writeErrorResponse(response, "JWT验证失败: " + e.getMessage(), HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
-        filterChain.doFilter(servletRequest,servletResponse);
+        filterChain.doFilter(servletRequest, servletResponse);
     }
 
-
-    private void writeErrorResponse(HttpServletResponse response, String message) throws IOException {
+    private void writeErrorResponse(HttpServletResponse response, String message, int status) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json;charset=UTF-8");
         Result errorResult = Result.error(message);
         String jsonResponse = JSONObject.toJSONString(errorResult);
         response.getWriter().write(jsonResponse);

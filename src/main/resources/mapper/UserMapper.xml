@@ -2,9 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.boke.Mapper.UserMapper">
-    <insert id="doregister" parameterType="com.example.boke.pojo.User" >
-        insert into user (user_name,user_password) value (#{userName},#{userPassword});
-    </insert>
 
     <select id="doLogin" resultType="com.example.boke.pojo.User">
         select * from user where user_name=#{userName}

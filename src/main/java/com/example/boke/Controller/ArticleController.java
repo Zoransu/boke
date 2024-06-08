@@ -4,23 +4,22 @@ import com.example.boke.Dto.ArticleDetailsDto;
 import com.example.boke.Dto.ArticleDto;
 import com.example.boke.Service.ArticleService;
 import com.example.boke.utils.Result;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 
 @Slf4j
 @RestController
 @RequestMapping("/Article")
+@Api(tags = "文章管理")
 public class ArticleController {
 
     @Autowired
@@ -28,7 +27,8 @@ public class ArticleController {
 
     //发布文章
     @PostMapping("/create")
-    public Result createArticle(@RequestBody ArticleDto articleDto, HttpServletRequest request){
+    @ApiOperation(value = "发布文章", notes = "发布一篇新文章")
+    public Result createArticle(@RequestBody @ApiParam(value = "文章信息", required = true)ArticleDto articleDto, HttpServletRequest request){
         try {
             // 从请求属性中获取用户ID
             Long userId = (Long) request.getAttribute("userId");
@@ -46,13 +46,15 @@ public class ArticleController {
 
     //获取单个文章详细页（文章，发布者，评论等信息）
     @GetMapping("/{articleId}")
-    public Result getArticleDetails(@PathVariable Long articleId) {
+    @ApiOperation(value = "获取文章详细信息", notes = "根据文章ID获取文章详细信息")
+    public Result getArticleDetails(@PathVariable @ApiParam(value = "文章ID", required = true)Long articleId) {
         log.info("查看文章:  {}",articleId);
         ArticleDetailsDto articleDetails = articleService.getArticleDetails(articleId);
         return Result.success(articleDetails);
     }
 
     @GetMapping("/getLastTen")
+    @ApiOperation(value = "获取最近发布的十篇文章", notes = "获取最近发布的十篇文章")
     public Result getLastTen(){
         ArrayList<ArticleDetailsDto> list=articleService.getLastTen();
         log.info("查看最近前十发布的文章: {}",list);
@@ -61,6 +63,7 @@ public class ArticleController {
 
 
     @GetMapping("/getHotTen")
+    @ApiOperation(value = "获取最热的十篇文章", notes = "获取最热的十篇文章")
     public Result getHotTen(){
         ArrayList<ArticleDetailsDto> list=articleService.getHotTen();
         log.info("查看最热前十文章: {}",list);
@@ -68,36 +71,23 @@ public class ArticleController {
     }
 
     //分页查询，每页5条（主页）
+    @ApiOperation(value = "分页查询文章", notes = "分页查询文章，每页5条")
     @GetMapping("/getArticles")
-    public Result getArticles(@RequestParam(defaultValue = "1") int page,
-                              @RequestParam(defaultValue = "5") int size){
+    public Result getArticles(@RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page,
+                              @RequestParam(defaultValue = "5") @ApiParam(value = "每页大小", defaultValue = "5")int size){
         ArrayList<ArticleDetailsDto> list=articleService.getArticles(page,size);
         log.info("查看第{}页的文章：{}",page,list);
         return Result.success(list);
     }
 
     //带某些标签的所有文章(标签用 , 进行分割)
+    @ApiOperation(value = "获取带标签的所有文章", notes = "根据标签获取所有文章，标签用逗号分割")
     @GetMapping("/getLabels")
-    public Result getLabels(@RequestParam("labels") String labels){
+    public Result getLabels(@RequestParam("labels") @ApiParam(value = "标签列表，用逗号分割", required = true)String labels){
         List<String> labelList = Arrays.asList(labels.split(","));
         List<ArticleDetailsDto> articles= articleService.getArticlesByLabels(labelList);
         log.info("查看带这些标签{}的所有文章：{}",labelList,articles);
         return Result.success(articles);
     }
 
-
-//    //修改国际标准ISO 8601
-//    public static Date ChangeData(Date data){
-//        LocalDateTime localDateTime = data.toInstant()
-//                .atZone(ZoneId.systemDefault())
-//                .toLocalDateTime();  // Date转换为LocalDateTime
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//        String formattedDate = localDateTime.format(formatter);  // 格式化LocalDateTime
-//        OffsetDateTime odt = OffsetDateTime.parse(formattedDate);
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm");
-//        LocalDateTime time = LocalDateTime.parse(formattedDate, formatter);
-//        // 将LocalDateTime转换回Date
-//        Date from = Date.from(time.atZone(ZoneId.systemDefault()).toInstant());
-//        return from;
-//    }
 }

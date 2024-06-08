@@ -21,6 +21,7 @@ public class LabelsController {
     @GetMapping("/LabelsCloud")
     public Result LabelsCloud(){
         ArrayList<LabelsCloudDto> list=labelsService.LabelsCloud();
+        log.info("标签词云{}",list);
         return Result.success(list);
     }
 

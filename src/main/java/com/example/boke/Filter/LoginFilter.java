@@ -3,6 +3,7 @@ package com.example.boke.Filter;
 import com.alibaba.fastjson.JSONObject;
 import com.example.boke.utils.JwtUtils;
 import com.example.boke.utils.Result;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.*;
@@ -14,7 +15,6 @@ import java.io.IOException;
 //@Component
 @WebFilter(urlPatterns = "/*")
 public class LoginFilter implements Filter {
-
     @Override//每次拦截都会用到
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
@@ -25,6 +25,7 @@ public class LoginFilter implements Filter {
             filterChain.doFilter(servletRequest,servletResponse);
             return;
         }
+
         String jwt = request.getHeader("token");
         if(!StringUtils.hasLength(jwt)){
             Result err = Result.error("未登录");

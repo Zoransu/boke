@@ -35,6 +35,6 @@ public class JwtUtils {
     public static Long extractUserId(String token) {
         Claims claims = extractAllClaims(token);
         // 从Claims中取出ID
-        return Long.parseLong(claims.get("id").toString());  // 确保在生成token时使用的键与此处一致
+        return Long.parseLong(claims.get("userId").toString());  // 确保在生成token时使用的键与此处一致
     }
 }

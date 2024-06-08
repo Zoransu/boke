@@ -8,8 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 
@@ -43,7 +48,8 @@ public class ArticleController {
     @GetMapping("/{articleId}")
     public Result getArticleDetails(@PathVariable Long articleId) {
         log.info("查看文章:  {}",articleId);
-        return Result.success(articleService.getArticleDetails(articleId));
+        ArticleDetailsDto articleDetails = articleService.getArticleDetails(articleId);
+        return Result.success(articleDetails);
     }
 
     @GetMapping("/getLastTen")
@@ -80,4 +86,18 @@ public class ArticleController {
     }
 
 
+//    //修改国际标准ISO 8601
+//    public static Date ChangeData(Date data){
+//        LocalDateTime localDateTime = data.toInstant()
+//                .atZone(ZoneId.systemDefault())
+//                .toLocalDateTime();  // Date转换为LocalDateTime
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//        String formattedDate = localDateTime.format(formatter);  // 格式化LocalDateTime
+//        OffsetDateTime odt = OffsetDateTime.parse(formattedDate);
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm");
+//        LocalDateTime time = LocalDateTime.parse(formattedDate, formatter);
+//        // 将LocalDateTime转换回Date
+//        Date from = Date.from(time.atZone(ZoneId.systemDefault()).toInstant());
+//        return from;
+//    }
 }

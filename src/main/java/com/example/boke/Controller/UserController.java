@@ -3,8 +3,6 @@ package com.example.boke.Controller;
 
 import com.example.boke.Dto.UserStatisticsDto;
 import com.example.boke.Service.UserService;
-import com.example.boke.pojo.Article;
-import com.example.boke.pojo.Comment;
 import com.example.boke.pojo.User;
 import com.example.boke.utils.JwtUtils;
 import com.example.boke.utils.Result;
@@ -12,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
@@ -35,7 +31,7 @@ public class UserController {
         }
         else if(user.getUserPassword().equals(user1.getUserPassword())){
             Map<String, Object> clan =new HashMap<>();
-            clan.put("id",user1.getUserId());
+            clan.put("userId",user1.getUserId());
             String jwt = JwtUtils.generateToken(clan);
             log.info("欢迎登录：{}",user1.getUserName());
             return Result.success(jwt);
@@ -102,7 +98,9 @@ public class UserController {
             if (userId == null) {
                 return Result.error("用户未登录或会话已过期");
             }
+            System.out.println(file.isEmpty());
             String fileDownloadUri = userService.storeFile(file, userId.toString());
+            System.out.println(fileDownloadUri);
             userService.updateUserProfilePhoto(userId,fileDownloadUri);
             log.info("{}上传头像成功，uri为：{}",userId,fileDownloadUri);
             return Result.success("上传头像成功");

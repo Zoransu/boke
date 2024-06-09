@@ -1,3 +1,7 @@
+-- 创建数据库
+CREATE DATABASE IF NOT EXISTS boke;
+USE boke;
+
 -- 创建用户表
 CREATE TABLE user(
                      user_id BIGINT NOT NULL AUTO_INCREMENT, -- 用户ID，自增主键

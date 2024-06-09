@@ -93,4 +93,18 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
 
+-- 创建触发器，在删除文章时删除相关的评论和文章标签关联
+CREATE TRIGGER before_article_delete
+    BEFORE DELETE ON articles
+    FOR EACH ROW
+BEGIN
+    -- 删除相关的评论
+    DELETE FROM comments WHERE article_id = OLD.article_id;
+
+    -- 删除相关的文章标签关联
+    DELETE FROM set_article_label WHERE article_id = OLD.article_id;
+END$$
+
+DELIMITER ;

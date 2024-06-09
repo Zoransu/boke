@@ -139,4 +139,9 @@
         latest_article_date DESC
     </select>
 
+    <!--删除文章-->
+    <delete id="deleteArticle" parameterType="long">
+        DELETE FROM articles WHERE article_id = #{articleId}
+    </delete>
+
 </mapper>

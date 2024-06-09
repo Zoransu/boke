@@ -23,4 +23,7 @@ public interface ArticleMapper {
     ArrayList<ArticleDetailsDto> getArticles(@Param("offset") int offset, @Param("limit") int limit);
 
     List<ArticleDetailsDto> getArticlesByLabels(List<String> labelList);
+
+    void deleteArticle(Long articleId);
+
 }

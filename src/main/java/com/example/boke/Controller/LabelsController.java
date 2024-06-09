@@ -29,4 +29,5 @@ public class LabelsController {
         return Result.success(list);
     }
 
+
 }

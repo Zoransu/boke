@@ -57,5 +57,9 @@ public class ArticleServiceImpl implements ArticleService {
         return articleMapper.getArticlesByLabels(labelList);
     }
 
+    @Override
+    public void deleteArticle(Long articleId) {
+        articleMapper.deleteArticle(articleId);
+    }
 
 }

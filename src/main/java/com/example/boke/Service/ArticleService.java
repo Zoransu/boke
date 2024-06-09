@@ -18,4 +18,8 @@ public interface ArticleService {
     ArrayList<ArticleDetailsDto> getArticles(int page, int size);
 
     List<ArticleDetailsDto> getArticlesByLabels(List<String> labelList);
+
+    void deleteArticle(Long articleId);
+
+
 }

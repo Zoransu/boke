@@ -90,4 +90,12 @@ public class ArticleController {
         return Result.success(articles);
     }
 
+
+    @ApiOperation(value ="删除文章" ,notes = "删除文章以及其标签、评论")
+    @DeleteMapping("/delete/{articleId}")
+    public Result deleteArticle(@PathVariable("articleId") Long articleId){
+            articleService.deleteArticle(articleId);
+            log.info("删除成功:{}",articleId);
+            return Result.success("删除成功");
+    }
 }

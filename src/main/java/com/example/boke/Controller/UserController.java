@@ -58,7 +58,7 @@ public class UserController {
         try {
             // 检查用户名是否存在
             if (userService.findByUserName(user.getUserName()) != null) {
-                log.info("用户名{}已存在，请重新输入", user.getUserName());
+                log.info("用户名 {} 已存在，请重新输入", user.getUserName());
                 return Result.error("用户名已存在，请重新输入");
             }
             // 注册用户

@@ -4,12 +4,13 @@ CREATE TABLE user(
                      user_name VARCHAR(20), -- 用户名
                      user_password VARCHAR(30), -- 用户密码
                      user_email VARCHAR(255), -- 用户邮箱
-                     user_profile_photo VARCHAR(255), -- 用户头像图片的URL
+                     user_profile_photo VARCHAR(255) DEFAULT 'http://localhost:8080/uploads/0.jpg', -- 用户头像图片的URL，默认值
                      registration_date DATETIME, -- 用户注册时间
                      user_telephone_number VARCHAR(11), -- 用户电话号码
                      user_nickname VARCHAR(20), -- 用户昵称
                      PRIMARY KEY (user_id) -- 主键为用户ID
 );
+
 -- 创建文章表
 CREATE TABLE articles (
                           article_id BIGINT NOT NULL AUTO_INCREMENT, -- 文章ID，自增主键

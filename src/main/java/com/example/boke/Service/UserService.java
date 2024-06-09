@@ -14,8 +14,6 @@ public interface UserService {
 
     UserStatisticsDto getUserStatistics(Long userId);
 
-    String storeFile(MultipartFile file, String toString) throws IOException;
-
     void updateUserProfilePhoto(Long userId, String fileDownloadUri);
 
     User doregister(User user);

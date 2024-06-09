@@ -6,15 +6,22 @@ import com.example.boke.pojo.User;
 import com.example.boke.utils.JwtUtils;
 import com.example.boke.utils.Result;
 import io.swagger.annotations.*;
+import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @Slf4j
 @RestController
@@ -95,6 +102,7 @@ public class UserController {
             if (userId == null) {
                 return Result.error("用户未登录或会话已过期");
             }
+            log.info("获取用户统计信息，用户ID: {}", userId);
             UserStatisticsDto userStatistics = userService.getUserStatistics(userId);
             return Result.success(userStatistics);
         } catch (Exception e) {
@@ -103,21 +111,62 @@ public class UserController {
         }
     }
 
+    private static final String UPLOAD_DIR = "uploads/";
+
     @PostMapping("/upload-avatar")
     @ApiOperation(value = "上传用户头像", notes = "上传用户头像接口")
-    public Result uploadAvatar(
-            HttpServletRequest request,
-            @RequestParam("file") @ApiParam(value = "头像文件", required = true) MultipartFile file) {
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token", value = "JWT令牌", required = true, paramType = "header",
+                    dataTypeClass = String.class)
+    })
+    public Result uploadAvatar(HttpServletRequest request,
+                               @RequestParam("file") @ApiParam(value = "头像文件", required = true) MultipartFile file) {
         try {
             // 从请求属性中获取用户ID
             Long userId = (Long) request.getAttribute("userId");
             if (userId == null) {
                 return Result.error("用户未登录或会话已过期");
             }
-            String fileDownloadUri = userService.storeFile(file, userId.toString());
+            // 确保上传目录存在
+            Files.createDirectories(Paths.get(UPLOAD_DIR));
+
+            // 删除用户之前的头像
+            try (Stream<Path> files = Files.list(Paths.get(UPLOAD_DIR))) {
+                files.filter(f -> f.getFileName().toString().startsWith(userId + "_"))
+                        .forEach(f -> {
+                            try {
+                                Files.delete(f);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+            }
+
+            // 生成唯一的文件名，避免文件名冲突
+            String originalFileName = file.getOriginalFilename();
+            String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            String fileName = userId + "_" + System.currentTimeMillis() + fileExtension;
+
+            // 保存文件到指定目录
+            Path path = Paths.get(UPLOAD_DIR + fileName);
+            try {
+                @Cleanup
+                InputStream inputStream = file.getInputStream();
+                Files.copy(inputStream, path);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // 生成文件URL
+            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/uploads/")
+                    .path(fileName)
+                    .toUriString();
+
+            // 更新用户头像URL
             userService.updateUserProfilePhoto(userId, fileDownloadUri);
-            log.info("{}上传头像成功，uri为：{}", userId, fileDownloadUri);
-            return Result.success("上传头像成功");
+            log.info("{} 上传头像成功，uri为：{}", userId, fileDownloadUri);
+            return Result.success("上传头像成功：" + fileDownloadUri);
         } catch (IOException e) {
             log.error("上传头像失败: {}", e.getMessage());
             return Result.error("上传头像失败：" + e.getMessage());

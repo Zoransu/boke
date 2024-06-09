@@ -12,13 +12,11 @@ public interface UserMapper {
 
     User doLogin(User user);
 
-
-
     void updateUer(User user);
 
     UserStatisticsDto getUserStatistics(Long userId);
 
-    @Update("UPDATE user SET user_profile_photo = #{profilePhotoUrl} WHERE user_id = #{userId}")
+    @Update("UPDATE user SET user_profile_photo = #{fileDownloadUri} WHERE user_id = #{userId}")
     void updateUserProfilePhoto(Long userId, String fileDownloadUri);
 
     @Select("SELECT * FROM user WHERE user_name = #{userName}")

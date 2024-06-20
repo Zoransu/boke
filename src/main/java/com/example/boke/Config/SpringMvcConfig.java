@@ -28,14 +28,6 @@ import java.util.List;
 @EnableKnife4j
 public class SpringMvcConfig extends WebMvcConfigurationSupport {
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns("*")
-                .allowCredentials(true)
-                .allowedMethods("GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
-                .allowedHeaders("*");
-    }
 
     @Bean
     public Docket createRestApi() {

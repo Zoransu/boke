@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -25,7 +26,7 @@ import java.util.List;
 @Configuration
 @EnableSwagger2
 @EnableKnife4j
-public class SpringMvcConfig extends WebMvcConfigurationSupport {
+public class SpringMvcConfig implements WebMvcConfigurer {
 
     @Bean
     public Docket createRestApi() {
@@ -68,7 +69,7 @@ public class SpringMvcConfig extends WebMvcConfigurationSupport {
     }
 
     @Override
-    protected void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
         log.info("开始设置静态资源映射..");
         registry.addResourceHandler("/doc.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
@@ -78,6 +79,5 @@ public class SpringMvcConfig extends WebMvcConfigurationSupport {
         // 添加上传文件路径的映射
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:uploads/");
-        super.addResourceHandlers(registry);
     }
 }

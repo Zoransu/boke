@@ -24,6 +24,12 @@ public class LoginFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String url = request.getRequestURL().toString();
 
+        // 处理OPTIONS请求
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
         // 放行登录、注册以及Swagger相关资源
         if (url.contains("login") || url.contains("register") ||
                 url.matches("(?i).*(css|jpg|png|gif|js|swagger-ui.html|swagger-resources|v2/api-docs|v3/api-docs|swagger-ui/index.html|webjars|doc.html|favicon.ico).*")) {

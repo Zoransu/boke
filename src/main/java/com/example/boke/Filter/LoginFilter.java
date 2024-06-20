@@ -20,41 +20,8 @@ public class LoginFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
-//        HttpServletRequest request = (HttpServletRequest) servletRequest;
-//        HttpServletResponse response = (HttpServletResponse) servletResponse;
-//        String url = request.getRequestURL().toString();
-//
-//        // 放行登录、注册以及Swagger相关资源
-//        if (url.contains("login") || url.contains("register") ||
-//                url.matches("(?i).*(css|jpg|png|gif|js|swagger-ui.html|swagger-resources|v2/api-docs|v3/api-docs|swagger-ui/index.html|webjars|doc.html|favicon.ico).*")) {
-//            filterChain.doFilter(servletRequest, servletResponse);
-//            return;
-//        }
-//
-//        String jwt = request.getHeader("token");
-//        if (!StringUtils.hasLength(jwt)) {
-//            writeErrorResponse(response, "未登录", HttpServletResponse.SC_UNAUTHORIZED);
-//            return;
-//        }
-//        try {
-//            JwtUtils.extractAllClaims(jwt);
-//            Long userId = JwtUtils.extractUserId(jwt);
-//            request.setAttribute("userId", userId);
-//            log.info("JWT验证成功，用户ID: {}", userId);
-//        } catch (Exception e) {
-//            writeErrorResponse(response, "JWT验证失败: " + e.getMessage(), HttpServletResponse.SC_UNAUTHORIZED);
-//            return;
-//        }
-//        filterChain.doFilter(servletRequest, servletResponse);
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-
-        // 如果是OPTIONS请求，直接返回成功响应
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            response.setStatus(HttpServletResponse.SC_OK);
-            return;
-        }
-
         String url = request.getRequestURL().toString();
 
         // 放行登录、注册以及Swagger相关资源

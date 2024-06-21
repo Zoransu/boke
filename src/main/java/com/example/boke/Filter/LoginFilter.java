@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.boke.utils.JwtUtils;
 import com.example.boke.utils.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -16,6 +17,7 @@ import java.io.IOException;
 @Component
 @Slf4j
 @WebFilter(urlPatterns = "/*")
+@Order(2)
 public class LoginFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
@@ -31,7 +33,7 @@ public class LoginFilter implements Filter {
         }
 
         // 放行登录、注册以及Swagger相关资源
-        if (url.contains("login") || url.contains("register") ||
+        if (url.contains("getLastTen")||url.contains("getHotTen")||url.contains("login") || url.contains("register") ||
                 url.matches("(?i).*(css|jpg|png|gif|js|swagger-ui.html|swagger-resources|v2/api-docs|v3/api-docs|swagger-ui/index.html|webjars|doc.html|favicon.ico).*")) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;

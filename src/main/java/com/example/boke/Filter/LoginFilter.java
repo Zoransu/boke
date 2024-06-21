@@ -45,7 +45,7 @@ public class LoginFilter implements Filter {
             writeErrorResponse(response, "未登录", HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
-        jwt=jwt.substring(1,jwt.length()-1);
+        jwt = jwt.replace("\"", "");
         try {
             JwtUtils.extractAllClaims(jwt);
             Long userId = JwtUtils.extractUserId(jwt);

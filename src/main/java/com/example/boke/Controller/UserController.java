@@ -94,7 +94,7 @@ public class UserController {
     }
 
     @GetMapping("/getUserStatistics")
-    @ApiOperation(value = "获取用户统计信息", notes = "获取用户统计信息接口")
+    @ApiOperation(value = "获取登录用户统计信息", notes = "获取登录用户统计信息接口")
     public Result getUserStatistics(HttpServletRequest request) {
         try {
             // 从请求属性中获取用户ID
@@ -109,6 +109,14 @@ public class UserController {
             log.error("信息获取失败: {}", e.getMessage());
             return Result.error("信息获取失败：" + e.getMessage());
         }
+    }
+
+    @GetMapping("/getUserStatisticsByUserId/{usreId}")
+    @ApiOperation(value = "获取指定用户统计信息", notes = "获取指定用户统计信息接口")
+    public Result getUserStatisticsByUserId(@PathVariable("usreId") Long usreId) {
+            log.info("获取用户统计信息，用户ID: {}", usreId);
+            UserStatisticsDto userStatistics = userService.getUserStatistics(usreId);
+            return Result.success(userStatistics);
     }
 
     private static final String UPLOAD_DIR = "uploads/";

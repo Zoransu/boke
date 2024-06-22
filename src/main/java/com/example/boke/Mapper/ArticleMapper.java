@@ -26,4 +26,5 @@ public interface ArticleMapper {
 
     void deleteArticle(Long articleId);
 
+    List<ArticleDetailsDto> getArticleByUserId(Long userId);
 }

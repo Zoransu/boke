@@ -21,5 +21,5 @@ public interface ArticleService {
 
     void deleteArticle(Long articleId);
 
-
+    List<ArticleDetailsDto> getArticleByUserId(Long userId);
 }

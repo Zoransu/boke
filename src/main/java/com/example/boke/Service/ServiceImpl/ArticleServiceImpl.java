@@ -62,4 +62,9 @@ public class ArticleServiceImpl implements ArticleService {
         articleMapper.deleteArticle(articleId);
     }
 
+    @Override
+    public List<ArticleDetailsDto> getArticleByUserId(Long userId) {
+        return articleMapper.getArticleByUserId(userId);
+    }
+
 }

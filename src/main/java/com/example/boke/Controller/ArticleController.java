@@ -71,7 +71,7 @@ public class ArticleController {
     }
 
     //分页查询，每页5条（主页）
-    @ApiOperation(value = "分页查询文章", notes = "分页查询文章，每页5条")
+    @ApiOperation(value = "分页查询文章", notes = "分页查询文章，每页5条，作用于主页面进行分页查询表")
     @GetMapping("/getArticles")
     public Result getArticles(@RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page,
                               @RequestParam(defaultValue = "5") @ApiParam(value = "每页大小", defaultValue = "5")int size){
@@ -99,5 +99,29 @@ public class ArticleController {
             return Result.success("删除成功");
     }
 
+    @ApiOperation(value ="通过用户id获取文章" ,notes = "根据userId获取该用户所有文章")
+    @GetMapping("/getArticleByUserId/{userId}")
+    public Result getArticleByUserId(@PathVariable("userId") Long userId){
+        List<ArticleDetailsDto> list=articleService.getArticleByUserId(userId);
+        log.info("获取用户id为{}，的所有文章信息{}",userId,list);
+        return Result.success(list);
+    }
 
+    @ApiOperation(value ="获取当前登录用户的所有文章" ,notes = "获取当前登录用户的所有文章的详细信息")
+    @GetMapping("/getMyArticles")
+    public Result getMyArticles(HttpServletRequest request){
+        try {
+            // 从请求属性中获取用户ID
+            Long userId = (Long) request.getAttribute("userId");
+            if (userId == null) {
+                return Result.error("用户未登录或会话已过期");
+            }
+            List<ArticleDetailsDto> list=articleService.getArticleByUserId(userId);
+            log.info("获取用户id为{}，的所有文章信息{}",userId,list);
+            return Result.success(list);
+        }catch (Exception e) {
+            log.error("获取文章失败: {}", e.getMessage());
+            return Result.error("获取失败：" + e.getMessage());
+        }
+    }
 }

@@ -9,9 +9,8 @@
     </insert>
 
     <!-- 文章关联标签 -->
-    <insert id="assignLabelToArticle">
-        INSERT INTO set_article_label (article_id, label_id)
-        VALUES (#{articleId}, #{labelId})
+    <insert id="assignLabelToArticle" statementType="CALLABLE">
+        CALL add_article_label(#{articleId}, #{labelName})
     </insert>
 
     <!--整合文章信息-->
@@ -20,6 +19,7 @@
         <result property="articleTitle" column="article_title" />
         <result property="articleContent" column="article_content" />
         <result property="articleDate" column="article_date" />
+        <result property="articleLikeCount" column="article_like_count" />
 
         <association property="author" javaType="com.example.boke.Dto.ArticleDetailsDto$User">
             <id property="userId" column="author_id" />
@@ -47,7 +47,7 @@
     <!--查看文章详细信息-->
     <select id="findArticleDetailsById" resultMap="ArticleDetailResultMap">
         SELECT
-            a.article_id, a.article_title, a.article_content, a.article_date,
+            a.article_id, a.article_title, a.article_content, a.article_date, a.article_like_count,
             u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
             c.comment_id, c.comment_content, c.comment_date, cu.user_id as commenter_id, cu.user_name as commenter_name,
             l.label_id, l.label_name
@@ -63,7 +63,7 @@
     <!--查看最近十条-->
     <select id="getLastTen" resultMap="ArticleDetailResultMap">
         SELECT
-            a.article_id, a.article_title, a.article_content, a.article_date,
+            a.article_id, a.article_title, a.article_content, a.article_date,a.article_like_count,
             u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
             c.comment_id, c.comment_content, c.comment_date, cu.user_id as commenter_id, cu.user_name as commenter_name,
             l.label_id, l.label_name
@@ -81,7 +81,7 @@
     <!--使用权重计算并将结果进行分组,查询前十热点文章-->
     <select id="getHotTen" resultMap="ArticleDetailResultMap">
         SELECT
-            a.article_id, a.article_title, a.article_content, a.article_date,
+            a.article_id, a.article_title, a.article_content, a.article_date,a.article_like_count,
             u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
             c.comment_id, c.comment_content, c.comment_date, cu.user_id as commenter_id, cu.user_name as commenter_name,
             l.label_id, l.label_name
@@ -97,7 +97,7 @@
 
     <select id="getArticles" resultMap="ArticleDetailResultMap">
         SELECT
-            a.article_id, a.article_title, a.article_content, a.article_date,
+            a.article_id, a.article_title, a.article_content, a.article_date,a.article_like_count,
             u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
             c.comment_id, c.comment_content, c.comment_date, cu.user_id as commenter_id, cu.user_name as commenter_name,
             l.label_id, l.label_name
@@ -113,7 +113,7 @@
 
     <select id="getArticlesByLabels" resultMap="ArticleDetailResultMap">
         SELECT
-        a.article_id,a.article_title,a.article_content,MAX(a.article_date) as latest_article_date,
+        a.article_id,a.article_title,a.article_content,MAX(a.article_date) as latest_article_date,a.article_like_count,
         u.user_id as author_id,u.user_name as author_name,u.user_profile_photo as author_photo,
         MAX(c.comment_id) as latest_comment_id,MAX(c.comment_content) as latest_comment_content,MAX(c.comment_date) as latest_comment_date,
         cu.user_id as commenter_id,cu.user_name as commenter_name,cu.user_profile_photo as commenter_photo,

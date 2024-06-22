@@ -26,6 +26,9 @@ public class ArticleDetailsDto {
     @ApiModelProperty(value = "文章发布日期", example = "2024-01-01T12:00:00Z")
     private Date articleDate;
 
+    @ApiModelProperty(value = "文章点赞数量", example = "100")
+    private Long articleLikeCount;
+
     @ApiModelProperty(value = "文章作者")
     private User author;
 

@@ -12,7 +12,7 @@ import java.util.List;
 public interface ArticleMapper {
     void createArticle(Article article);
 
-    void assignLabelToArticle(Long articleId, Long labelId);
+    void assignLabelToArticle(Long articleId, String labelName);
 
     ArticleDetailsDto findArticleDetailsById(Long articleId);
 

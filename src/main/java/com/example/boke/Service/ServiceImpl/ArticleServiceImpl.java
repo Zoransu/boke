@@ -24,9 +24,9 @@ public class ArticleServiceImpl implements ArticleService {
                 articleDto.getContent(), 0L, new Date(), 0L);
         articleMapper.createArticle(article);
 
-        if (articleDto.getLabelIds() != null && !articleDto.getLabelIds().isEmpty()) {
-            for (Long labelId : articleDto.getLabelIds()) {
-                articleMapper.assignLabelToArticle(article.getArticleId(), labelId);
+        if (articleDto.getLabelNames() != null && !articleDto.getLabelNames().isEmpty()) {
+            for (String labelName : articleDto.getLabelNames()) {
+                articleMapper.assignLabelToArticle(article.getArticleId(), labelName);
             }
         }
     }

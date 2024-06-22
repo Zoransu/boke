@@ -5,11 +5,17 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import java.beans.PropertyChangeSupport;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @ApiModel(description = "文章详细数据传输对象")
 public class ArticleDetailsDto {
@@ -26,6 +32,9 @@ public class ArticleDetailsDto {
     @ApiModelProperty(value = "文章发布日期", example = "2024-01-01T12:00:00Z")
     private Date articleDate;
 
+    @ApiModelProperty(value = "格式化后的文章发布日期", example = "EEE MMM dd HH:mm:ss z yyyy")
+    private String articleDateNew;
+
     @ApiModelProperty(value = "文章点赞数量", example = "100")
     private Long articleLikeCount;
 
@@ -37,6 +46,44 @@ public class ArticleDetailsDto {
 
     @ApiModelProperty(value = "文章标签列表")
     private List<Label> labels;
+
+    private PropertyChangeSupport support;
+
+    public ArticleDetailsDto() {
+        this.support = new PropertyChangeSupport(this); // 初始化 PropertyChangeSupport
+    }
+
+    public ArticleDetailsDto(Long articleId, String articleTitle, String articleContent, Date articleDate, Long articleLikeCount, User author, List<Comment> comments, List<Label> labels) {
+        this();
+        this.articleId = articleId;
+        this.articleTitle = articleTitle;
+        this.articleContent = articleContent;
+        this.articleDate = articleDate;
+        this.articleLikeCount = articleLikeCount;
+        this.author = author;
+        this.comments = comments;
+        this.labels = labels;
+        setArticleDate(articleDate); // 设置初始值时格式化日期
+    }
+
+    public void setArticleDate(Date articleDate) {
+        Date oldDate = this.articleDate;
+        this.articleDate = articleDate;
+        support.firePropertyChange("articleDate", oldDate, articleDate);
+        System.out.println("oldDate:  "+oldDate);
+        // 格式化日期
+        if (articleDate != null) {
+            try {
+                ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(articleDate.toInstant(), ZoneId.systemDefault());
+                this.articleDateNew = zonedDateTime.format(DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy"));
+            } catch (DateTimeParseException e) {
+                log.error("Error formatting date: " + e.getMessage());
+                this.articleDateNew = null;
+            }
+        } else {
+            this.articleDateNew = null;
+        }
+    }
 
     @Data
     @ApiModel(description = "文章作者")

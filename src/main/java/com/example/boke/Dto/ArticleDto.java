@@ -21,6 +21,6 @@ public class ArticleDto {
     @ApiModelProperty(value = "文章内容", example = "这是文章的内容")
     private String content;
 
-    @ApiModelProperty(value = "标签ID列表", example = "[music、]")
+    @ApiModelProperty(value = "标签ID列表")
     private List<String> labelNames;
 }

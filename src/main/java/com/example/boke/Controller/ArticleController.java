@@ -125,6 +125,26 @@ public class ArticleController {
         }
     }
 
+    //带某些标签的所有文章(标签用 , 进行分割)
+    @ApiOperation(value = "获取当前用户带标签的所有文章", notes = "根据标签获取当前用户所有文章，标签用逗号分割")
+    @GetMapping("/getMyLabels")
+    public Result getMyLabels(
+            @RequestParam("labels") @ApiParam(value = "标签列表，用逗号分割", required = true)String labels,
+            HttpServletRequest request){
+        try {
+            Long userId = (Long) request.getAttribute("userId");
+            if (userId == null) {
+                return Result.error("用户未登录或会话已过期");
+            }
+            List<String> labelList = Arrays.asList(labels.split(","));
+            List<ArticleDetailsDto> articles= articleService.getMyArticlesByLabels(labelList,userId);
+            log.info("查看带这些标签{}的所有文章：{}",labelList,articles);
+            return Result.success(articles);
+        }catch (Exception e) {
+            log.error("获取文章失败: {}", e.getMessage());
+            return Result.error("获取失败：" + e.getMessage());
+        }
 
+    }
 
 }

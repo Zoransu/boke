@@ -112,25 +112,26 @@ DELIMITER ;
 
 
 DELIMITER //
-CREATE PROCEDURE DeleteComment(
-    IN comment_id BIGINT,
-    IN user_id BIGINT
-)
+create
+    definer = root@localhost procedure DeleteComment(IN comment_id bigint, IN user_id bigint)
 BEGIN
     DECLARE article_owner_id BIGINT;
     DECLARE comment_owner_id BIGINT;
+
     -- 获取评论的所有者ID
-    SELECT user_id INTO comment_owner_id
+    SELECT comments.user_id INTO comment_owner_id
     FROM comments
-    WHERE comment_id = comment_id;
+    WHERE comment_id = comments.comment_id;
+
     -- 获取文章的所有者ID
-    SELECT user_id INTO article_owner_id
+    SELECT articles.user_id INTO article_owner_id
     FROM articles
-    WHERE article_id = (SELECT article_id FROM comments WHERE comment_id = comment_id);
+    WHERE article_id = (SELECT article_id FROM comments WHERE comment_id = comments.comment_id);
+
     -- 检查请求删除评论的用户是否为评论所有者或文章所有者
     IF comment_owner_id = user_id OR article_owner_id = user_id THEN
         -- 删除评论
-        DELETE FROM comments WHERE comment_id = comment_id;
+        DELETE FROM comments WHERE comments.comment_id = comment_id;
     ELSE
         -- 如果用户无权删除该评论，则抛出错误
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'User not authorized to delete this comment';

@@ -27,4 +27,6 @@ public interface ArticleMapper {
     void deleteArticle(Long articleId);
 
     List<ArticleDetailsDto> getArticleByUserId(Long userId);
+
+    List<ArticleDetailsDto> getMyArticlesByLabels(List<String> labelList, Long userId);
 }

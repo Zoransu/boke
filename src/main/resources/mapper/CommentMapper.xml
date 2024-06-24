@@ -6,7 +6,7 @@
         CALL DeleteComment(#{commentId}, #{userId})
     </delete>
 
-    <insert id="addComment">
+    <insert id="addComment" parameterType="com.example.boke.pojo.Comment">
         INSERT INTO comments (article_id, user_id, comment_date, comment_content, parent_comment_id)
         VALUES (#{articleId}, #{userId}, #{commentDate}, #{commentContent}, #{parentCommentId})
     </insert>

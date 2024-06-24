@@ -131,7 +131,7 @@
         LEFT JOIN labels l ON sal.label_id = l.label_id
         WHERE
         l.label_name IN
-        <foreach item="label" collection="labels" open="(" separator="," close=")">
+        <foreach item="label" collection="list" open="(" separator="," close=")">
             #{label}
         </foreach>
         GROUP BY
@@ -159,7 +159,7 @@
         LEFT JOIN labels l ON sal.label_id = l.label_id
         WHERE
         l.label_name IN
-        <foreach item="label" collection="labels" open="(" separator="," close=")">
+        <foreach item="label" collection="list" open="(" separator="," close=")">
             #{label}
         </foreach>
         and u.user_id=#{userId}

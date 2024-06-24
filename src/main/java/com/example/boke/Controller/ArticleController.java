@@ -144,7 +144,35 @@ public class ArticleController {
             log.error("获取文章失败: {}", e.getMessage());
             return Result.error("获取失败：" + e.getMessage());
         }
-
     }
 
+
+    @ApiOperation(value = "主页模糊搜索" ,notes = "主页搜索带关键词的文章")
+    @PostMapping("/getArticlesBySearch")
+    public Result getArticlesBySearch(@RequestParam("keyword")
+                                          @ApiParam(value = "模糊搜索关键词", required = true)String keyword){
+        List<ArticleDetailsDto> articles=articleService.getArticlesBySearch(keyword);
+        log.info("搜索关键词{}",keyword);
+        return Result.success(articles);
+    }
+
+    @ApiOperation(value = "当前用户，自己模糊搜索" ,notes = "当前用户搜索带关键词的文章")
+    @PostMapping("/getMyArticlesBySearch")
+    public Result getMyArticlesBySearch(@RequestParam("keyword")
+                                      @ApiParam(value = "模糊搜索关键词", required = true)String keyword,
+                                        HttpServletRequest request){
+        try {
+            Long userId = (Long) request.getAttribute("userId");
+            if (userId == null) {
+                return Result.error("用户未登录或会话已过期");
+            }
+            List<ArticleDetailsDto> articles=articleService.getMyArticlesBySearch(keyword,userId);
+            log.info("搜索关键词：{}",keyword);
+            return Result.success(articles);
+        }catch (Exception e) {
+            log.error("获取文章失败: {}", e.getMessage());
+            return Result.error("获取失败：" + e.getMessage());
+        }
+
+    }
 }

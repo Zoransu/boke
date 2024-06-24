@@ -72,4 +72,14 @@ public class ArticleServiceImpl implements ArticleService {
         return articleMapper.getMyArticlesByLabels(labelList,userId);
     }
 
+    @Override
+    public List<ArticleDetailsDto> getArticlesBySearch(String keyword) {
+        return articleMapper.getArticlesBySearch(keyword);
+    }
+
+    @Override
+    public List<ArticleDetailsDto> getMyArticlesBySearch(String keyword, Long userId) {
+        return articleMapper.getMyArticlesBySearch(keyword,userId);
+    }
+
 }

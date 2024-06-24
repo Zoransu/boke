@@ -194,6 +194,35 @@
         ORDER BY a.article_date DESC
     </select>
 
+    <select id="getArticlesBySearch" resultMap="ArticleDetailResultMap">
+        SELECT
+            a.article_id, a.article_title, a.article_content, a.article_date,a.article_like_count,
+            u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
+            c.comment_id, c.comment_content, c.comment_date, cu.user_id as commenter_id, cu.user_name as commenter_name,
+            l.label_id, l.label_name
+        FROM articles a
+                 LEFT JOIN user u ON a.user_id = u.user_id
+                 LEFT JOIN comments c ON a.article_id = c.article_id
+                 LEFT JOIN user cu ON c.user_id = cu.user_id
+                 LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
+                 LEFT JOIN labels l ON sal.label_id = l.label_id
+        WHERE LOCATE(#{keyword},a.article_title)>0
+        ORDER BY a.article_date DESC
+    </select>
 
-
+    <select id="getMyArticlesBySearch" resultMap="ArticleDetailResultMap">
+        SELECT
+            a.article_id, a.article_title, a.article_content, a.article_date,a.article_like_count,
+            u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
+            c.comment_id, c.comment_content, c.comment_date, cu.user_id as commenter_id, cu.user_name as commenter_name,
+            l.label_id, l.label_name
+        FROM articles a
+                 LEFT JOIN user u ON a.user_id = u.user_id
+                 LEFT JOIN comments c ON a.article_id = c.article_id
+                 LEFT JOIN user cu ON c.user_id = cu.user_id
+                 LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
+                 LEFT JOIN labels l ON sal.label_id = l.label_id
+        WHERE LOCATE(#{keyword},a.article_title)>0 and #{userId} = a.user_id
+        ORDER BY a.article_date DESC
+    </select>
 </mapper>

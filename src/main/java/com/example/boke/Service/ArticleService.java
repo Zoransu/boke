@@ -24,4 +24,8 @@ public interface ArticleService {
     List<ArticleDetailsDto> getArticleByUserId(Long userId);
 
     List<ArticleDetailsDto> getMyArticlesByLabels(List<String> labelList, Long userId);
+
+    List<ArticleDetailsDto> getArticlesBySearch(String keyword);
+
+    List<ArticleDetailsDto> getMyArticlesBySearch(String keyword, Long userId);
 }

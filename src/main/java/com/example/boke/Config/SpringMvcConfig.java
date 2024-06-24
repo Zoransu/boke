@@ -52,7 +52,7 @@ public class SpringMvcConfig extends WebMvcConfigurationSupport {
     }
 
     private ApiKey apiKey() {
-        return new ApiKey("JWT", "token", "header");
+        return new ApiKey("JWT", "Authorization", "header");
     }
 
     private SecurityContext securityContext() {

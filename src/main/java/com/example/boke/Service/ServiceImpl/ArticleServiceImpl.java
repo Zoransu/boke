@@ -82,4 +82,9 @@ public class ArticleServiceImpl implements ArticleService {
         return articleMapper.getMyArticlesBySearch(keyword,userId);
     }
 
+    @Override
+    public List<String> getAllTitle() {
+        return articleMapper.getAllTitle();
+    }
+
 }

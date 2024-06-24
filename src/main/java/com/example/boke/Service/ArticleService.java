@@ -28,4 +28,6 @@ public interface ArticleService {
     List<ArticleDetailsDto> getArticlesBySearch(String keyword);
 
     List<ArticleDetailsDto> getMyArticlesBySearch(String keyword, Long userId);
+
+    List<String> getAllTitle();
 }

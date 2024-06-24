@@ -225,4 +225,9 @@
         WHERE LOCATE(#{keyword},a.article_title)>0 and #{userId} = a.user_id
         ORDER BY a.article_date DESC
     </select>
+
+
+    <select id="getAllTitle" resultType="string">
+        SELECT article_title from articles ;
+    </select>
 </mapper>

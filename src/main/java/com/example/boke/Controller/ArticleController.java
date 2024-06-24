@@ -173,6 +173,14 @@ public class ArticleController {
             log.error("获取文章失败: {}", e.getMessage());
             return Result.error("获取失败：" + e.getMessage());
         }
-
     }
+
+    @ApiOperation(value = "获取所有文章标题" ,notes = "获取所有文章标题，用于模糊查询")
+    @GetMapping("/getAllTitle")
+    public Result getAllTitle(){
+        List<String> articlesTitle=articleService.getAllTitle();
+        log.info("获取所有文章标题{}",articlesTitle);
+        return Result.success(articlesTitle);
+    }
+
 }

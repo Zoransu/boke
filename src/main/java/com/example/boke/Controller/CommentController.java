@@ -46,9 +46,10 @@ public class CommentController {
         }
     }
 
-
+    @ApiOperation(value = "删除评论", notes = "文章用户或者评论用户删除评论")
     @DeleteMapping("/delete/{commentId}")
-    public Result deleteComment(@PathVariable("commentId") Long commentId,HttpServletRequest request){
+    public Result deleteComment(@ApiParam(value = "评论id", required = true)
+                                    @PathVariable("commentId") Long commentId,HttpServletRequest request){
         try {
             // 从请求属性中获取用户ID
             Long userId = (Long) request.getAttribute("userId");

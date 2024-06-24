@@ -29,7 +29,7 @@ public class ArticleDetailsDto {
     @ApiModelProperty(value = "文章内容", example = "这是文章的内容")
     private String articleContent;
 
-    @ApiModelProperty(value = "文章发布日期", example = "2024-01-01T12:00:00Z")
+    @ApiModelProperty(value = "文章发布日期", example = "1719065587000")
     private Date articleDate;
 
     @ApiModelProperty(value = "格式化后的文章发布日期", example = "EEE MMM dd HH:mm:ss z yyyy")
@@ -70,7 +70,6 @@ public class ArticleDetailsDto {
         Date oldDate = this.articleDate;
         this.articleDate = articleDate;
         support.firePropertyChange("articleDate", oldDate, articleDate);
-        System.out.println("oldDate:  "+oldDate);
         // 格式化日期
         if (articleDate != null) {
             try {
@@ -131,11 +130,45 @@ public class ArticleDetailsDto {
         @ApiModelProperty(value = "评论内容", example = "这是一个评论")
         private String commentContent;
 
-        @ApiModelProperty(value = "评论日期", example = "2024-01-01T12:00:00Z")
+        @ApiModelProperty(value = "评论日期", example = "1719065587000")
         private Date commentDate;
 
         @ApiModelProperty(value = "评论用户")
         private User commenter;
+
+        @ApiModelProperty(value = "格式化评论日期", example = "周六 6月 22 22:13:07 CST 2024")
+        private String commentDateNew;
+
+        private PropertyChangeSupport support;
+
+        public Comment() {this.support = new PropertyChangeSupport(this); }
+
+        public Comment(Long commentId, String commentContent, Date commentDate, User commenter) {
+            this();
+            this.commentId = commentId;
+            this.commentContent = commentContent;
+            this.commentDate = commentDate;
+            this.commenter = commenter;
+            setCommentDate(commentDate);
+        }
+
+        public void setCommentDate(Date commentDate) {
+            Date oldDate = this.commentDate;
+            this.commentDate = commentDate;
+            support.firePropertyChange("articleDate", oldDate, commentDate);
+            // 格式化日期
+            if (commentDate != null) {
+                try {
+                    ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(commentDate.toInstant(), ZoneId.systemDefault());
+                    this.commentDateNew = zonedDateTime.format(DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy"));
+                } catch (DateTimeParseException e) {
+                    log.error("Error formatting date: " + e.getMessage());
+                    this.commentDateNew = null;
+                }
+            } else {
+                this.commentDateNew = null;
+            }
+        }
     }
 
     @Data

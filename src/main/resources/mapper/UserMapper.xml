@@ -38,6 +38,7 @@
         SELECT
             u.user_id,
             u.user_name,
+            u.user_profile_photo,
             COUNT(DISTINCT a.article_id) AS articles_count,
             SUM(a.article_comment_count) AS total_comments,
             SUM(a.article_like_count) AS total_likes

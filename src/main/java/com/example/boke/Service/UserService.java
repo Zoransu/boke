@@ -2,9 +2,6 @@ package com.example.boke.Service;
 
 import com.example.boke.Dto.UserStatisticsDto;
 import com.example.boke.pojo.User;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 public interface UserService {
 

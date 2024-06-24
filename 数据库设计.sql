@@ -74,7 +74,6 @@ CREATE TABLE user_friends (
 
 -- 创建触发器，在插入评论时同步数据并更新文章的评论数量
 DELIMITER $$
-
 CREATE TRIGGER before_comment_insert
     BEFORE INSERT ON comments
     FOR EACH ROW
@@ -89,17 +88,15 @@ BEGIN
         ) c ON a.article_id = c.article_id
     SET a.article_comment_count = c.comment_count
     WHERE a.article_id = NEW.article_id;
-
     -- 更新评论数量
     UPDATE articles
     SET article_comment_count = article_comment_count + 1
     WHERE article_id = NEW.article_id;
 END$$
-
 DELIMITER ;
 
-DELIMITER $$
 
+DELIMITER //
 -- 创建触发器，在删除文章时删除相关的评论和文章标签关联
 CREATE TRIGGER before_article_delete
     BEFORE DELETE ON articles
@@ -107,9 +104,54 @@ CREATE TRIGGER before_article_delete
 BEGIN
     -- 删除相关的评论
     DELETE FROM comments WHERE article_id = OLD.article_id;
-
     -- 删除相关的文章标签关联
     DELETE FROM set_article_label WHERE article_id = OLD.article_id;
-END$$
+END//
+DELIMITER ;
 
+
+
+DELIMITER //
+CREATE PROCEDURE DeleteComment(
+    IN comment_id BIGINT,
+    IN user_id BIGINT
+)
+BEGIN
+    DECLARE article_owner_id BIGINT;
+    DECLARE comment_owner_id BIGINT;
+    -- 获取评论的所有者ID
+    SELECT user_id INTO comment_owner_id
+    FROM comments
+    WHERE comment_id = comment_id;
+    -- 获取文章的所有者ID
+    SELECT user_id INTO article_owner_id
+    FROM articles
+    WHERE article_id = (SELECT article_id FROM comments WHERE comment_id = comment_id);
+    -- 检查请求删除评论的用户是否为评论所有者或文章所有者
+    IF comment_owner_id = user_id OR article_owner_id = user_id THEN
+        -- 删除评论
+        DELETE FROM comments WHERE comment_id = comment_id;
+    ELSE
+        -- 如果用户无权删除该评论，则抛出错误
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'User not authorized to delete this comment';
+    END IF;
+END //
+DELIMITER ;
+
+
+#插入标签
+DELIMITER //
+create
+    definer = root@localhost procedure add_article_label(IN p_article_id bigint, IN p_label_name varchar(20))
+BEGIN
+    DECLARE p_label_id BIGINT;
+    -- 获取标签ID
+    SELECT label_id
+    INTO p_label_id
+    FROM labels
+    WHERE label_name = p_label_name;
+    -- 插入数据到set_article_label表
+    INSERT INTO set_article_label (article_id, label_id)
+    VALUES (p_article_id, p_label_id);
+END;
 DELIMITER ;

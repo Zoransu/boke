@@ -9,4 +9,6 @@ public interface CommentMapper {
     @Insert("INSERT INTO comments (article_id, user_id, comment_date, comment_content, parent_comment_id)" +
             "VALUES (#{articleId}, #{userId}, #{commentDate}, #{commentContent}, #{parentCommentId})")
     void addComment(Comment comment);
+
+    void deleteComment(Long commentId, Long userId);
 }

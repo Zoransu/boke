@@ -26,4 +26,7 @@ public class UserStatisticsDto {
 
     @ApiModelProperty(value = "总点赞数", example = "100")
     private int totalLikes;
+
+    @ApiModelProperty(value = "头像", example = "http://localhost:8080/uploads/0.jpg")
+    private String userProfilePhoto;
 }

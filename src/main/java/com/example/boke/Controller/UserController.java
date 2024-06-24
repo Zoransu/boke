@@ -1,5 +1,6 @@
 package com.example.boke.Controller;
 
+import com.example.boke.Dto.UserDot;
 import com.example.boke.Dto.UserStatisticsDto;
 import com.example.boke.Service.UserService;
 import com.example.boke.pojo.User;
@@ -45,7 +46,14 @@ public class UserController {
             clan.put("userId", user1.getUserId());
             String jwt = JwtUtils.generateToken(clan);
             log.info("欢迎登录：{}", user1.getUserName());
-            return Result.success(jwt);
+            UserDot userDot=new UserDot();
+            userDot.setUserName(user1.getUserName());
+            userDot.setUserEmail(user1.getUserEmail());
+            userDot.setJwt(jwt);
+            userDot.setUserNickname(user1.getUserNickname());
+            userDot.setUserProfilePhoto(user1.getUserProfilePhoto());
+            userDot.setUserTelephoneNumber(user1.getUserTelephoneNumber());
+            return Result.success(userDot);
         } else {
             log.info("密码错误,请重新登录");
             return Result.error("密码错误");

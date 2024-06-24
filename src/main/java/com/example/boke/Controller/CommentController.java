@@ -9,10 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -48,4 +45,23 @@ public class CommentController {
             return Result.error("添加评论失败：" + e.getMessage());
         }
     }
+
+
+    @DeleteMapping("/delete/{commentId}")
+    public Result deleteComment(@PathVariable("commentId") Long commentId,HttpServletRequest request){
+        try {
+            // 从请求属性中获取用户ID
+            Long userId = (Long) request.getAttribute("userId");
+            if (userId == null) {
+                return Result.error("用户未登录或会话已过期");
+            }
+            commentService.deleteComment(commentId,userId);
+            log.info("用户{}，删除评论{}",userId,commentId);
+            return Result.success("删除评论成功:  "+commentId);
+        }catch (Exception e){
+            log.error("删除评论失败: {}", e.getMessage());
+            return Result.error("删除评论失败：" + e.getMessage());
+        }
+    }
+
 }

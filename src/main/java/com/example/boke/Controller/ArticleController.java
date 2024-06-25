@@ -61,8 +61,8 @@ public class ArticleController {
         return Result.success(list);
     }
 
-    //分页查询，每页5条（主页）
-    @ApiOperation(value = "分页查询文章", notes = "分页查询文章，每页5条，作用于主页面进行分页查询表")
+    //分页查询，每页4条（主页）
+    @ApiOperation(value = "分页查询文章", notes = "分页查询文章，每页4条，作用于主页面进行分页查询表")
     @PostMapping("/out/getArticles")
     public Result getArticles(@RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page){
         ArrayList<ArticleDetailsDto> list=articleService.getArticles(page);
@@ -71,7 +71,7 @@ public class ArticleController {
     }
 
     //带某些标签的所有文章(标签用 , 进行分割)
-    @ApiOperation(value = "获取带标签的所有文章", notes = "根据标签获取所有文章，标签用逗号分割")
+    @ApiOperation(value = "获取带标签的分页文章", notes = "根据标签获取分页文章，标签用逗号分割")
     @PostMapping("/out/getLabels")
     public Result getLabels(@RequestParam("labels") @ApiParam(value = "标签列表，用逗号分割", required = true)String labels,
                             @RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page){
@@ -99,7 +99,7 @@ public class ArticleController {
         return Result.success(list);
     }
 
-    @ApiOperation(value ="获取当前登录用户的所有文章" ,notes = "获取当前登录用户的所有文章的详细信息")
+    @ApiOperation(value ="获取当前登录用户的分页文章" ,notes = "获取当前登录用户的分页文章的详细信息")
     @GetMapping("/getMyArticles")
     public Result getMyArticles(@RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page,
                                 HttpServletRequest request){
@@ -119,7 +119,7 @@ public class ArticleController {
     }
 
     //带某些标签的所有文章(标签用 , 进行分割)
-    @ApiOperation(value = "获取当前用户带标签的所有文章", notes = "根据标签获取当前用户所有文章，标签用逗号分割")
+    @ApiOperation(value = "获取当前用户带标签的分页文章", notes = "根据标签获取当前用户分页文章，标签用逗号分割")
     @PostMapping("/getMyLabels")
     public Result getMyLabels(
             @RequestParam("labels") @ApiParam(value = "标签列表，用逗号分割", required = true)String labels,

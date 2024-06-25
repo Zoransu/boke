@@ -19,13 +19,13 @@ public interface ArticleMapper {
 
     ArrayList<ArticleDetailsDto> getArticles(@Param("offset") int offset);
 
-    List<ArticleDetailsDto> getArticlesByLabels(List<String> labelList,int offset);
+    List<ArticleDetailsDto> getArticlesByLabels(@Param("labelList")List<String> labelList,int offset);
 
     void deleteArticle(Long articleId);
 
     List<ArticleDetailsDto> getArticleByUserId(Long userId,int offset);
 
-    List<ArticleDetailsDto> getMyArticlesByLabels(List<String> labelList, Long userId,int offset);
+    List<ArticleDetailsDto> getMyArticlesByLabels(@Param("labelList")List<String> labelList, Long userId,int offset);
 
     List<ArticleDetailsDto> getArticlesBySearch(String keyword,int offset);
 

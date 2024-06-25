@@ -53,7 +53,7 @@ public class ArticleController {
         return Result.success(articleDetails);
     }
 
-    @GetMapping("/getLastTen")
+    @GetMapping("/out/getLastTen")
     @ApiOperation(value = "获取最近发布的十篇文章", notes = "获取最近发布的十篇文章")
     public Result getLastTen(){
         ArrayList<ArticleDetailsDto> list=articleService.getLastTen();
@@ -62,7 +62,7 @@ public class ArticleController {
     }
 
 
-    @GetMapping("/getHotTen")
+    @GetMapping("/out/getHotTen")
     @ApiOperation(value = "获取最热的十篇文章", notes = "获取最热的十篇文章")
     public Result getHotTen(){
         ArrayList<ArticleDetailsDto> list=articleService.getHotTen();
@@ -72,7 +72,7 @@ public class ArticleController {
 
     //分页查询，每页5条（主页）
     @ApiOperation(value = "分页查询文章", notes = "分页查询文章，每页5条，作用于主页面进行分页查询表")
-    @PostMapping("/getArticles")
+    @PostMapping("/out/getArticles")
     public Result getArticles(@RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page,
                               @RequestParam(defaultValue = "4") @ApiParam(value = "每页大小", defaultValue = "4")int size){
         ArrayList<ArticleDetailsDto> list=articleService.getArticles(page,size);
@@ -82,7 +82,7 @@ public class ArticleController {
 
     //带某些标签的所有文章(标签用 , 进行分割)
     @ApiOperation(value = "获取带标签的所有文章", notes = "根据标签获取所有文章，标签用逗号分割")
-    @GetMapping("/getLabels")
+    @PostMapping("/out/getLabels")
     public Result getLabels(@RequestParam("labels") @ApiParam(value = "标签列表，用逗号分割", required = true)String labels){
         List<String> labelList = Arrays.asList(labels.split(","));
         List<ArticleDetailsDto> articles= articleService.getArticlesByLabels(labelList);
@@ -127,7 +127,7 @@ public class ArticleController {
 
     //带某些标签的所有文章(标签用 , 进行分割)
     @ApiOperation(value = "获取当前用户带标签的所有文章", notes = "根据标签获取当前用户所有文章，标签用逗号分割")
-    @GetMapping("/getMyLabels")
+    @PostMapping("/getMyLabels")
     public Result getMyLabels(
             @RequestParam("labels") @ApiParam(value = "标签列表，用逗号分割", required = true)String labels,
             HttpServletRequest request){
@@ -148,7 +148,7 @@ public class ArticleController {
 
 
     @ApiOperation(value = "主页模糊搜索" ,notes = "主页搜索带关键词的文章")
-    @PostMapping("/getArticlesBySearch")
+    @PostMapping("/out/getArticlesBySearch")
     public Result getArticlesBySearch(@RequestParam("keyword")
                                           @ApiParam(value = "模糊搜索关键词", required = true)String keyword){
         List<ArticleDetailsDto> articles=articleService.getArticlesBySearch(keyword);
@@ -176,7 +176,7 @@ public class ArticleController {
     }
 
     @ApiOperation(value = "获取所有文章标题" ,notes = "获取所有文章标题，用于模糊查询")
-    @GetMapping("/getAllTitle")
+    @GetMapping("/out/getAllTitle")
     public Result getAllTitle(){
         List<String> articlesTitle=articleService.getAllTitle();
         log.info("获取所有文章标题{}",articlesTitle);
@@ -184,14 +184,14 @@ public class ArticleController {
     }
 
     @ApiOperation(value = "查询文章个数" ,notes = "查询文章个数，用于分页查询动态设置页数")
-    @GetMapping("/getSize")
+    @GetMapping("/out/getSize")
     public Result getSize(){
         Integer size=articleService.getSize();
         log.info("文章个数：{}",size);
         return Result.success(size);
     }
 
-    @ApiOperation(value = "查询文章个数" ,notes = "查询文章个数，用于分页查询动态设置页数")
+    @ApiOperation(value = "修改点赞" ,notes = "点赞数量修改")
     @GetMapping("/updateLike")
     public Result updateLike(@RequestParam Long articleid ,@RequestParam int like){
         articleService.updateLike(articleid,like);

@@ -74,7 +74,7 @@ public class ArticleController {
     @ApiOperation(value = "分页查询文章", notes = "分页查询文章，每页5条，作用于主页面进行分页查询表")
     @PostMapping("/getArticles")
     public Result getArticles(@RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page,
-                              @RequestParam(defaultValue = "5") @ApiParam(value = "每页大小", defaultValue = "5")int size){
+                              @RequestParam(defaultValue = "4") @ApiParam(value = "每页大小", defaultValue = "4")int size){
         ArrayList<ArticleDetailsDto> list=articleService.getArticles(page,size);
         log.info("查看第{}页的文章：{}",page,list);
         return Result.success(list);

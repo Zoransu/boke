@@ -230,4 +230,8 @@
     <select id="getAllTitle" resultType="string">
         SELECT article_title from articles ;
     </select>
+
+    <select id="getSize" resultType="integer">
+        SELECT count(article_id) from articles ;
+    </select>
 </mapper>

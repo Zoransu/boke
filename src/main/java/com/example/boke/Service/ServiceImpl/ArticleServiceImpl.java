@@ -87,4 +87,9 @@ public class ArticleServiceImpl implements ArticleService {
         return articleMapper.getAllTitle();
     }
 
+    @Override
+    public Integer getSize() {
+        return articleMapper.getSize();
+    }
+
 }

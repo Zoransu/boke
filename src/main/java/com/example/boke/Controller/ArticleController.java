@@ -72,7 +72,7 @@ public class ArticleController {
 
     //分页查询，每页5条（主页）
     @ApiOperation(value = "分页查询文章", notes = "分页查询文章，每页5条，作用于主页面进行分页查询表")
-    @GetMapping("/getArticles")
+    @PostMapping("/getArticles")
     public Result getArticles(@RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page,
                               @RequestParam(defaultValue = "5") @ApiParam(value = "每页大小", defaultValue = "5")int size){
         ArrayList<ArticleDetailsDto> list=articleService.getArticles(page,size);
@@ -181,6 +181,13 @@ public class ArticleController {
         List<String> articlesTitle=articleService.getAllTitle();
         log.info("获取所有文章标题{}",articlesTitle);
         return Result.success(articlesTitle);
+    }
+
+    @ApiOperation(value = "查询文章个数" ,notes = "查询文章个数，用于分页查询动态设置页数")
+    @GetMapping("/getSize")
+    public Result getSize(){
+        Integer size=articleService.getSize();
+        return Result.success(size);
     }
 
 }

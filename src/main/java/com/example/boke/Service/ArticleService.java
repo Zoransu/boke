@@ -30,4 +30,6 @@ public interface ArticleService {
     List<ArticleDetailsDto> getMyArticlesBySearch(String keyword, Long userId);
 
     List<String> getAllTitle();
+
+    Integer getSize();
 }

@@ -97,4 +97,29 @@ public class ArticleServiceImpl implements ArticleService {
         articleMapper.updateLike(articleid,like);
     }
 
+    @Override
+    public int getMyArticlesBySearchSize(String keyword, Long userId) {
+        return articleMapper.getMyArticlesBySearchSize(keyword,userId);
+    }
+
+    @Override
+    public int getLabelsSize(List<String> labelList) {
+        return articleMapper.getLabelsSize(labelList);
+    }
+
+    @Override
+    public int getArticleByUserIdSize(Long userId) {
+        return articleMapper.getArticleByUserIdSize(userId);
+    }
+
+    @Override
+    public int getMyLabelsSize(List<String> labelList, Long userId) {
+        return articleMapper.getMyLabelsSize(labelList,userId);
+    }
+
+    @Override
+    public int getArticlesBySearchSize(String keyword) {
+        return articleMapper.getArticlesBySearchSize(keyword);
+    }
+
 }

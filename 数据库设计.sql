@@ -110,7 +110,6 @@ END//
 DELIMITER ;
 
 
-
 DELIMITER //
 create
     definer = root@localhost procedure DeleteComment(IN comment_id bigint, IN user_id bigint)

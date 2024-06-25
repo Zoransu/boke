@@ -63,11 +63,19 @@ public class ArticleController {
 
     //分页查询，每页4条（主页）
     @ApiOperation(value = "分页查询文章", notes = "分页查询文章，每页4条，作用于主页面进行分页查询表")
-    @PostMapping("/out/getArticles")
+    @GetMapping("/out/getArticles")
     public Result getArticles(@RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page){
         ArrayList<ArticleDetailsDto> list=articleService.getArticles(page);
         log.info("查看第{}页的文章：{}",page,list);
         return Result.success(list);
+    }
+
+    @ApiOperation(value = "查询所有文章个数" ,notes = "查询文章个数，用于分页查询动态设置页数")
+    @GetMapping("/out/getAllSize")
+    public Result getSize(){
+        Integer size=articleService.getSize();
+        log.info("文章个数：{}",size);
+        return Result.success(size);
     }
 
     //带某些标签的所有文章(标签用 , 进行分割)
@@ -81,6 +89,14 @@ public class ArticleController {
         return Result.success(articles);
     }
 
+    @ApiOperation(value = "获取带标签的分页文章的个数", notes = "根据标签获取分页文章个数，用于分页查询")
+    @GetMapping("/out/getLabelsSize")
+    public Result getLabelsSize(@RequestParam("labels") @ApiParam(value = "标签列表，用逗号分割", required = true)String labels){
+        List<String> labelList = Arrays.asList(labels.split(","));
+        int size=articleService.getLabelsSize(labelList);
+        log.info("查看带这些标签{}的文章个数{}",labelList,size);
+        return Result.success(size);
+    }
 
     @ApiOperation(value ="删除文章" ,notes = "删除文章以及其标签、评论")
     @DeleteMapping("/delete/{articleId}")
@@ -91,12 +107,20 @@ public class ArticleController {
     }
 
     @ApiOperation(value ="通过用户id获取文章" ,notes = "根据userId获取该用户指定页数的文章")
-    @GetMapping("/getArticleByUserId")
+    @PostMapping("/getArticleByUserId")
     public Result getArticleByUserId(@RequestParam("userId") @ApiParam("指定用户id")Long userId,
                                      @RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page){
         List<ArticleDetailsDto> list=articleService.getArticleByUserId(userId,page);
         log.info("获取用户id为{}，的第{}文章信息{}",userId,page,list);
         return Result.success(list);
+    }
+
+    @ApiOperation(value ="通过用户id获取文章个数" ,notes = "根据userId获取该用户指定页数的文章个数，用于分页查询")
+    @GetMapping("/getArticleByUserIdSize")
+    public Result getArticleByUserIdSize(@RequestParam("userId") @ApiParam("指定用户id")Long userId){
+        int size=articleService.getArticleByUserIdSize(userId);
+        log.info("获取用户id为{}，的所有文章个数{}",userId,size);
+        return Result.success(size);
     }
 
     @ApiOperation(value ="获取当前登录用户的分页文章" ,notes = "获取当前登录用户的分页文章的详细信息")
@@ -114,6 +138,23 @@ public class ArticleController {
             return Result.success(list);
         }catch (Exception e) {
             log.error("获取文章失败: {}", e.getMessage());
+            return Result.error("获取失败：" + e.getMessage());
+        }
+    }
+
+    @ApiOperation(value ="获取当前登录用户的文章个数" ,notes = "获取当前登录用户的文章的个数，用于分页查询")
+    @GetMapping("/getMyArticlesSize")
+    public Result getMyArticlesSize(HttpServletRequest request){
+        try {
+            Long userId = (Long) request.getAttribute("userId");
+            if (userId == null) {
+                return Result.error("用户未登录或会话已过期");
+            }
+            int size=articleService.getArticleByUserIdSize(userId);
+            log.info("获取用户id为{}，的文章数量{}",userId,size);
+            return Result.success(size);
+        }catch (Exception e) {
+            log.error("获取失败: {}", e.getMessage());
             return Result.error("获取失败：" + e.getMessage());
         }
     }
@@ -140,6 +181,25 @@ public class ArticleController {
         }
     }
 
+    @ApiOperation(value = "获取当前用户带标签的文章个数", notes = "获取当前用户带标签的文章个数，用于分页查询")
+    @GetMapping("/getMyLabelsSize")
+    public Result getMyLabelsSize(@RequestParam("labels") @ApiParam(value = "标签列表，用逗号分割", required = true)String labels,
+                                  HttpServletRequest request){
+        try {
+            Long userId = (Long) request.getAttribute("userId");
+            if (userId == null) {
+                return Result.error("用户未登录或会话已过期");
+            }
+            List<String> labelList = Arrays.asList(labels.split(","));
+            int size=articleService.getMyLabelsSize(labelList,userId);
+            log.info("当前用户带标签{}的文章个数{}",labelList,size);
+            return Result.success(size);
+        }catch (Exception e) {
+            log.error("获取失败: {}", e.getMessage());
+            return Result.error("获取失败：" + e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "主页模糊搜索" ,notes = "主页搜索带关键词的文章")
     @PostMapping("/out/getArticlesBySearch")
     public Result getArticlesBySearch(
@@ -149,6 +209,15 @@ public class ArticleController {
         List<ArticleDetailsDto> articles=articleService.getArticlesBySearch(keyword,page);
         log.info("搜索关键词{}",keyword);
         return Result.success(articles);
+    }
+
+    @ApiOperation(value = "主页模糊搜索文章个数" ,notes = "主页搜索带关键词的文章个数，用于分页查询")
+    @PostMapping("/out/getArticlesBySearchSize")
+    public Result getArticlesBySearchSize(
+            @RequestParam("keyword") @ApiParam(value = "模糊搜索关键词", required = true)String keyword){
+        int size=articleService.getArticlesBySearchSize(keyword);
+        log.info("搜索关键词 {} 的文章个数{}",keyword,size);
+        return Result.success(size);
     }
 
     @ApiOperation(value = "当前用户，自己模糊搜索" ,notes = "当前用户搜索带关键词的文章")
@@ -171,20 +240,31 @@ public class ArticleController {
         }
     }
 
+    @ApiOperation(value = "当前用户，自己模糊搜索文章的个数" ,notes = "当前用户搜索带关键词的文章的个数，用于分页")
+    @PostMapping("/getMyArticlesBySearchSize")
+    public Result getMyArticlesBySearchSize(
+            @RequestParam("keyword") @ApiParam(value = "模糊搜索关键词", required = true)String keyword,
+            HttpServletRequest request){
+        try {
+            Long userId = (Long) request.getAttribute("userId");
+            if (userId == null) {
+                return Result.error("用户未登录或会话已过期");
+            }
+            int size= articleService.getMyArticlesBySearchSize(keyword,userId);
+            log.info("搜索关键词：{},个数为：{}",keyword,size);
+            return Result.success(size);
+        }catch (Exception e) {
+            log.error("获取失败: {}", e.getMessage());
+            return Result.error("获取失败：" + e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "获取所有文章标题" ,notes = "获取所有文章标题，用于模糊查询")
     @GetMapping("/out/getAllTitle")
     public Result getAllTitle(){
         List<String> articlesTitle=articleService.getAllTitle();
         log.info("获取所有文章标题{}",articlesTitle);
         return Result.success(articlesTitle);
-    }
-
-    @ApiOperation(value = "查询文章个数" ,notes = "查询文章个数，用于分页查询动态设置页数")
-    @GetMapping("/out/getSize")
-    public Result getSize(){
-        Integer size=articleService.getSize();
-        log.info("文章个数：{}",size);
-        return Result.success(size);
     }
 
     @ApiOperation(value = "修改点赞" ,notes = "点赞数量修改")

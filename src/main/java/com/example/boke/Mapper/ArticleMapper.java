@@ -36,4 +36,14 @@ public interface ArticleMapper {
     Integer getSize();
 
     void updateLike(Long articleId, int like);
+
+    int getMyArticlesBySearchSize(String keyword, Long userId);
+
+    int getLabelsSize(List<String> labelList);
+
+    int getArticleByUserIdSize(Long userId);
+
+    int getMyLabelsSize(List<String> labelList, Long userId);
+
+    int getArticlesBySearchSize(String keyword);
 }

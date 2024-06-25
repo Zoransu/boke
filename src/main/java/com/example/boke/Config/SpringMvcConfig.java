@@ -28,7 +28,6 @@ import java.util.List;
 @EnableKnife4j
 public class SpringMvcConfig extends WebMvcConfigurationSupport {
 
-
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)

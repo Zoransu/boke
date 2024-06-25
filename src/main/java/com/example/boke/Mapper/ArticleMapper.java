@@ -4,7 +4,6 @@ import com.example.boke.Dto.ArticleDetailsDto;
 import com.example.boke.pojo.Article;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,4 +36,6 @@ public interface ArticleMapper {
     List<String> getAllTitle();
 
     Integer getSize();
+
+    void updateLike(Long articleid, int like);
 }

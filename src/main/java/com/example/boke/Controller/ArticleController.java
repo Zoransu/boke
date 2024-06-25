@@ -191,4 +191,11 @@ public class ArticleController {
         return Result.success(size);
     }
 
+    @ApiOperation(value = "查询文章个数" ,notes = "查询文章个数，用于分页查询动态设置页数")
+    @GetMapping("/updateLike")
+    public Result updateLike(@RequestParam Long articleid ,@RequestParam int like){
+        articleService.updateLike(articleid,like);
+        log.info("文章{}  点赞更新：{}",articleid,like);
+        return Result.success();
+    }
 }

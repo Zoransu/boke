@@ -92,4 +92,9 @@ public class ArticleServiceImpl implements ArticleService {
         return articleMapper.getSize();
     }
 
+    @Override
+    public void updateLike(Long articleid, int like) {
+        articleMapper.updateLike(articleid,like);
+    }
+
 }

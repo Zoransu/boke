@@ -234,4 +234,8 @@
     <select id="getSize" resultType="integer">
         SELECT count(article_id) from articles ;
     </select>
+
+    <update id="updateLike" >
+        update articles set article_like_count=#{like} where article_id=#{articleid}
+    </update>
 </mapper>

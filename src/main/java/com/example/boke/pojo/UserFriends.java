@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserFriend {
+public class UserFriends {
     private Long id;                  // 记录ID
     private Long userId;              // 用户ID
     private Long userFriendId;        // 好友的用户ID

@@ -32,4 +32,6 @@ public interface ArticleService {
     List<String> getAllTitle();
 
     Integer getSize();
+
+    void updateLike(Long articleid, int like);
 }

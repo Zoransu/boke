@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.boke.Mapper.ArticleMapper">
+
     <!-- 插入文章 -->
     <insert id="createArticle" parameterType="com.example.boke.pojo.Article" useGeneratedKeys="true" keyProperty="articleId">
         INSERT INTO articles (user_id, article_title, article_content, article_comment_count, article_date, article_like_count)
@@ -61,25 +62,6 @@
         WHERE a.article_id = #{articleId}
     </select>
 
-    <!--查看最近十条-->
-    <select id="getLastTen" resultMap="ArticleDetailResultMap">
-        SELECT
-            a.article_id, a.article_title, a.article_content, a.article_date,a.article_like_count,
-            u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
-            c.comment_id, c.comment_content, c.comment_date, cu.user_id as commenter_id, cu.user_name as commenter_name,
-            cu.user_profile_photo as commenter_photo,
-            l.label_id, l.label_name
-        FROM articles a
-                 LEFT JOIN user u ON a.user_id = u.user_id
-                 LEFT JOIN comments c ON a.article_id = c.article_id
-                 LEFT JOIN user cu ON c.user_id = cu.user_id
-                 LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
-                 LEFT JOIN labels l ON sal.label_id = l.label_id
-        ORDER BY a.article_date DESC
-        LIMIT 10
-    </select>
-
-
     <!--使用权重计算并将结果进行分组,查询前十热点文章-->
     <select id="getHotTen" resultMap="ArticleDetailResultMap">
         SELECT
@@ -111,8 +93,8 @@
                  LEFT JOIN user cu ON c.user_id = cu.user_id
                  LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
                  LEFT JOIN labels l ON sal.label_id = l.label_id
-        ORDER BY article_date DESC
-        LIMIT #{limit} OFFSET #{offset}
+        ORDER BY a.article_date DESC
+        LIMIT #{offset},4
     </select>
 
     <select id="getArticlesByLabels" resultMap="ArticleDetailResultMap">
@@ -141,7 +123,9 @@
         l.label_id, l.label_name
         ORDER BY
         latest_article_date DESC
+        LIMIT #{offset},4
     </select>
+
 
     <select id="getMyArticlesByLabels" resultMap="ArticleDetailResultMap">
         SELECT
@@ -170,6 +154,7 @@
         l.label_id, l.label_name
         ORDER BY
         latest_article_date DESC
+        LIMIT #{offset},4
     </select>
 
     <!--删除文章-->
@@ -192,7 +177,9 @@
                  LEFT JOIN labels l ON sal.label_id = l.label_id
         WHERE u.user_id=#{userId}
         ORDER BY a.article_date DESC
+        LIMIT #{offset},4
     </select>
+
 
     <select id="getArticlesBySearch" resultMap="ArticleDetailResultMap">
         SELECT
@@ -208,6 +195,7 @@
                  LEFT JOIN labels l ON sal.label_id = l.label_id
         WHERE LOCATE(#{keyword},a.article_title)>0
         ORDER BY a.article_date DESC
+        LIMIT #{offset},4
     </select>
 
     <select id="getMyArticlesBySearch" resultMap="ArticleDetailResultMap">
@@ -224,8 +212,8 @@
                  LEFT JOIN labels l ON sal.label_id = l.label_id
         WHERE LOCATE(#{keyword},a.article_title)>0 and #{userId} = a.user_id
         ORDER BY a.article_date DESC
+        LIMIT #{offset},4
     </select>
-
 
     <select id="getAllTitle" resultType="string">
         SELECT article_title from articles ;
@@ -236,6 +224,7 @@
     </select>
 
     <update id="updateLike" >
-        update articles set article_like_count=#{like} where article_id=#{articleid}
+        update articles set article_like_count=#{like} where article_id=#{articleId};
     </update>
+
 </mapper>

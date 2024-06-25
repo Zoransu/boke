@@ -53,15 +53,6 @@ public class ArticleController {
         return Result.success(articleDetails);
     }
 
-    @GetMapping("/out/getLastTen")
-    @ApiOperation(value = "获取最近发布的十篇文章", notes = "获取最近发布的十篇文章")
-    public Result getLastTen(){
-        ArrayList<ArticleDetailsDto> list=articleService.getLastTen();
-        log.info("查看最近前十发布的文章: {}",list);
-        return Result.success(list);
-    }
-
-
     @GetMapping("/out/getHotTen")
     @ApiOperation(value = "获取最热的十篇文章", notes = "获取最热的十篇文章")
     public Result getHotTen(){
@@ -73,9 +64,8 @@ public class ArticleController {
     //分页查询，每页5条（主页）
     @ApiOperation(value = "分页查询文章", notes = "分页查询文章，每页5条，作用于主页面进行分页查询表")
     @PostMapping("/out/getArticles")
-    public Result getArticles(@RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page,
-                              @RequestParam(defaultValue = "4") @ApiParam(value = "每页大小", defaultValue = "4")int size){
-        ArrayList<ArticleDetailsDto> list=articleService.getArticles(page,size);
+    public Result getArticles(@RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page){
+        ArrayList<ArticleDetailsDto> list=articleService.getArticles(page);
         log.info("查看第{}页的文章：{}",page,list);
         return Result.success(list);
     }
@@ -83,10 +73,11 @@ public class ArticleController {
     //带某些标签的所有文章(标签用 , 进行分割)
     @ApiOperation(value = "获取带标签的所有文章", notes = "根据标签获取所有文章，标签用逗号分割")
     @PostMapping("/out/getLabels")
-    public Result getLabels(@RequestParam("labels") @ApiParam(value = "标签列表，用逗号分割", required = true)String labels){
+    public Result getLabels(@RequestParam("labels") @ApiParam(value = "标签列表，用逗号分割", required = true)String labels,
+                            @RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page){
         List<String> labelList = Arrays.asList(labels.split(","));
-        List<ArticleDetailsDto> articles= articleService.getArticlesByLabels(labelList);
-        log.info("查看带这些标签{}的所有文章：{}",labelList,articles);
+        List<ArticleDetailsDto> articles= articleService.getArticlesByLabels(labelList,page);
+        log.info("查看带这些标签{}的所有文章中的第{}页",labelList,page);
         return Result.success(articles);
     }
 
@@ -99,25 +90,27 @@ public class ArticleController {
             return Result.success("删除成功");
     }
 
-    @ApiOperation(value ="通过用户id获取文章" ,notes = "根据userId获取该用户所有文章")
-    @GetMapping("/getArticleByUserId/{userId}")
-    public Result getArticleByUserId(@PathVariable("userId") Long userId){
-        List<ArticleDetailsDto> list=articleService.getArticleByUserId(userId);
-        log.info("获取用户id为{}，的所有文章信息{}",userId,list);
+    @ApiOperation(value ="通过用户id获取文章" ,notes = "根据userId获取该用户指定页数的文章")
+    @GetMapping("/getArticleByUserId")
+    public Result getArticleByUserId(@RequestParam("userId") @ApiParam("指定用户id")Long userId,
+                                     @RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page){
+        List<ArticleDetailsDto> list=articleService.getArticleByUserId(userId,page);
+        log.info("获取用户id为{}，的第{}文章信息{}",userId,page,list);
         return Result.success(list);
     }
 
     @ApiOperation(value ="获取当前登录用户的所有文章" ,notes = "获取当前登录用户的所有文章的详细信息")
     @GetMapping("/getMyArticles")
-    public Result getMyArticles(HttpServletRequest request){
+    public Result getMyArticles(@RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page,
+                                HttpServletRequest request){
         try {
             // 从请求属性中获取用户ID
             Long userId = (Long) request.getAttribute("userId");
             if (userId == null) {
                 return Result.error("用户未登录或会话已过期");
             }
-            List<ArticleDetailsDto> list=articleService.getArticleByUserId(userId);
-            log.info("获取用户id为{}，的所有文章信息{}",userId,list);
+            List<ArticleDetailsDto> list=articleService.getArticleByUserId(userId,page);
+            log.info("获取用户id为{}，的第{}文章信息{}",userId,page,list);
             return Result.success(list);
         }catch (Exception e) {
             log.error("获取文章失败: {}", e.getMessage());
@@ -130,6 +123,7 @@ public class ArticleController {
     @PostMapping("/getMyLabels")
     public Result getMyLabels(
             @RequestParam("labels") @ApiParam(value = "标签列表，用逗号分割", required = true)String labels,
+            @RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page,
             HttpServletRequest request){
         try {
             Long userId = (Long) request.getAttribute("userId");
@@ -137,8 +131,8 @@ public class ArticleController {
                 return Result.error("用户未登录或会话已过期");
             }
             List<String> labelList = Arrays.asList(labels.split(","));
-            List<ArticleDetailsDto> articles= articleService.getMyArticlesByLabels(labelList,userId);
-            log.info("查看带这些标签{}的所有文章：{}",labelList,articles);
+            List<ArticleDetailsDto> articles= articleService.getMyArticlesByLabels(labelList,userId,page);
+            log.info("查看带这些标签{}的第{}页的文章：{}",labelList,page,articles);
             return Result.success(articles);
         }catch (Exception e) {
             log.error("获取文章失败: {}", e.getMessage());
@@ -146,27 +140,29 @@ public class ArticleController {
         }
     }
 
-
     @ApiOperation(value = "主页模糊搜索" ,notes = "主页搜索带关键词的文章")
     @PostMapping("/out/getArticlesBySearch")
-    public Result getArticlesBySearch(@RequestParam("keyword")
-                                          @ApiParam(value = "模糊搜索关键词", required = true)String keyword){
-        List<ArticleDetailsDto> articles=articleService.getArticlesBySearch(keyword);
+    public Result getArticlesBySearch(
+            @RequestParam("keyword") @ApiParam(value = "模糊搜索关键词", required = true)String keyword,
+            @RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page
+            ){
+        List<ArticleDetailsDto> articles=articleService.getArticlesBySearch(keyword,page);
         log.info("搜索关键词{}",keyword);
         return Result.success(articles);
     }
 
     @ApiOperation(value = "当前用户，自己模糊搜索" ,notes = "当前用户搜索带关键词的文章")
     @PostMapping("/getMyArticlesBySearch")
-    public Result getMyArticlesBySearch(@RequestParam("keyword")
-                                      @ApiParam(value = "模糊搜索关键词", required = true)String keyword,
-                                        HttpServletRequest request){
+    public Result getMyArticlesBySearch(
+            @RequestParam("keyword") @ApiParam(value = "模糊搜索关键词", required = true)String keyword,
+            @RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page,
+            HttpServletRequest request){
         try {
             Long userId = (Long) request.getAttribute("userId");
             if (userId == null) {
                 return Result.error("用户未登录或会话已过期");
             }
-            List<ArticleDetailsDto> articles=articleService.getMyArticlesBySearch(keyword,userId);
+            List<ArticleDetailsDto> articles=articleService.getMyArticlesBySearch(keyword,userId,page);
             log.info("搜索关键词：{}",keyword);
             return Result.success(articles);
         }catch (Exception e) {

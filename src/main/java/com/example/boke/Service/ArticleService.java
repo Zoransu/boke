@@ -11,23 +11,21 @@ public interface ArticleService {
 
     ArticleDetailsDto getArticleDetails(Long articleId);
 
-    ArrayList<ArticleDetailsDto> getLastTen();
-
     ArrayList<ArticleDetailsDto> getHotTen();
 
-    ArrayList<ArticleDetailsDto> getArticles(int page, int size);
+    ArrayList<ArticleDetailsDto> getArticles(int page);
 
-    List<ArticleDetailsDto> getArticlesByLabels(List<String> labelList);
+    List<ArticleDetailsDto> getArticlesByLabels(List<String> labelList,int page);
 
     void deleteArticle(Long articleId);
 
-    List<ArticleDetailsDto> getArticleByUserId(Long userId);
+    List<ArticleDetailsDto> getArticleByUserId(Long userId,int page);
 
-    List<ArticleDetailsDto> getMyArticlesByLabels(List<String> labelList, Long userId);
+    List<ArticleDetailsDto> getMyArticlesByLabels(List<String> labelList, Long userId,int page);
 
-    List<ArticleDetailsDto> getArticlesBySearch(String keyword);
+    List<ArticleDetailsDto> getArticlesBySearch(String keyword,int page);
 
-    List<ArticleDetailsDto> getMyArticlesBySearch(String keyword, Long userId);
+    List<ArticleDetailsDto> getMyArticlesBySearch(String keyword, Long userId,int page);
 
     List<String> getAllTitle();
 

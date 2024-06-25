@@ -15,27 +15,25 @@ public interface ArticleMapper {
 
     ArticleDetailsDto findArticleDetailsById(Long articleId);
 
-    ArrayList<ArticleDetailsDto> getLastTen();
-
     ArrayList<ArticleDetailsDto> getHotTen();
 
-    ArrayList<ArticleDetailsDto> getArticles(@Param("offset") int offset, @Param("limit") int limit);
+    ArrayList<ArticleDetailsDto> getArticles(@Param("offset") int offset);
 
-    List<ArticleDetailsDto> getArticlesByLabels(List<String> labelList);
+    List<ArticleDetailsDto> getArticlesByLabels(List<String> labelList,int offset);
 
     void deleteArticle(Long articleId);
 
-    List<ArticleDetailsDto> getArticleByUserId(Long userId);
+    List<ArticleDetailsDto> getArticleByUserId(Long userId,int offset);
 
-    List<ArticleDetailsDto> getMyArticlesByLabels(List<String> labelList, Long userId);
+    List<ArticleDetailsDto> getMyArticlesByLabels(List<String> labelList, Long userId,int offset);
 
-    List<ArticleDetailsDto> getArticlesBySearch(String keyword);
+    List<ArticleDetailsDto> getArticlesBySearch(String keyword,int offset);
 
-    List<ArticleDetailsDto> getMyArticlesBySearch(String keyword, Long userId);
+    List<ArticleDetailsDto> getMyArticlesBySearch(String keyword, Long userId,int offset);
 
     List<String> getAllTitle();
 
     Integer getSize();
 
-    void updateLike(Long articleid, int like);
+    void updateLike(Long articleId, int like);
 }

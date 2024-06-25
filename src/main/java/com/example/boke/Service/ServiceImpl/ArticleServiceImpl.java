@@ -37,24 +37,20 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public ArrayList<ArticleDetailsDto> getLastTen() {
-        return articleMapper.getLastTen();
-    }
-
-    @Override
     public ArrayList<ArticleDetailsDto> getHotTen() {
         return articleMapper.getHotTen();
     }
 
     @Override
-    public ArrayList<ArticleDetailsDto> getArticles(int page, int size) {
-        int offset = (page - 1) * size;
-        return articleMapper.getArticles(offset,size);
+    public ArrayList<ArticleDetailsDto> getArticles(int page) {
+        int offset = (page - 1) * 4;
+        return articleMapper.getArticles(offset);
     }
 
     @Override
-    public List<ArticleDetailsDto> getArticlesByLabels(List<String> labelList) {
-        return articleMapper.getArticlesByLabels(labelList);
+    public List<ArticleDetailsDto> getArticlesByLabels(List<String> labelList,int page) {
+        int offset = (page - 1) * 4;
+        return articleMapper.getArticlesByLabels(labelList,offset);
     }
 
     @Override
@@ -63,23 +59,27 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public List<ArticleDetailsDto> getArticleByUserId(Long userId) {
-        return articleMapper.getArticleByUserId(userId);
+    public List<ArticleDetailsDto> getArticleByUserId(Long userId,int page) {
+        int offset = (page - 1) * 4;
+        return articleMapper.getArticleByUserId(userId,offset);
     }
 
     @Override
-    public List<ArticleDetailsDto> getMyArticlesByLabels(List<String> labelList, Long userId) {
-        return articleMapper.getMyArticlesByLabels(labelList,userId);
+    public List<ArticleDetailsDto> getMyArticlesByLabels(List<String> labelList, Long userId,int page) {
+        int offset = (page - 1) * 4;
+        return articleMapper.getMyArticlesByLabels(labelList,userId,offset);
     }
 
     @Override
-    public List<ArticleDetailsDto> getArticlesBySearch(String keyword) {
-        return articleMapper.getArticlesBySearch(keyword);
+    public List<ArticleDetailsDto> getArticlesBySearch(String keyword,int page) {
+        int offset = (page - 1) * 4;
+        return articleMapper.getArticlesBySearch(keyword,offset);
     }
 
     @Override
-    public List<ArticleDetailsDto> getMyArticlesBySearch(String keyword, Long userId) {
-        return articleMapper.getMyArticlesBySearch(keyword,userId);
+    public List<ArticleDetailsDto> getMyArticlesBySearch(String keyword, Long userId,int page) {
+        int offset = (page - 1) * 4;
+        return articleMapper.getMyArticlesBySearch(keyword,userId,offset);
     }
 
     @Override

@@ -63,7 +63,7 @@ public class ArticleController {
 
     //分页查询，每页4条（主页）
     @ApiOperation(value = "分页查询文章", notes = "分页查询文章，每页4条，作用于主页面进行分页查询表")
-    @GetMapping("/out/getArticles")
+    @PostMapping("/out/getArticles")
     public Result getArticles(@RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page){
         ArrayList<ArticleDetailsDto> list=articleService.getArticles(page);
         log.info("查看第{}页的文章：{}",page,list);
@@ -90,7 +90,7 @@ public class ArticleController {
     }
 
     @ApiOperation(value = "获取带标签的分页文章的个数", notes = "根据标签获取分页文章个数，用于分页查询")
-    @GetMapping("/out/getLabelsSize")
+    @PostMapping("/out/getLabelsSize")
     public Result getLabelsSize(@RequestParam("labels") @ApiParam(value = "标签列表，用逗号分割", required = true)String labels){
         List<String> labelList = Arrays.asList(labels.split(","));
         int size=articleService.getLabelsSize(labelList);
@@ -116,7 +116,7 @@ public class ArticleController {
     }
 
     @ApiOperation(value ="通过用户id获取文章个数" ,notes = "根据userId获取该用户指定页数的文章个数，用于分页查询")
-    @GetMapping("/getArticleByUserIdSize")
+    @PostMapping("/getArticleByUserIdSize")
     public Result getArticleByUserIdSize(@RequestParam("userId") @ApiParam("指定用户id")Long userId){
         int size=articleService.getArticleByUserIdSize(userId);
         log.info("获取用户id为{}，的所有文章个数{}",userId,size);
@@ -124,7 +124,7 @@ public class ArticleController {
     }
 
     @ApiOperation(value ="获取当前登录用户的分页文章" ,notes = "获取当前登录用户的分页文章的详细信息")
-    @GetMapping("/getMyArticles")
+    @PostMapping("/getMyArticles")
     public Result getMyArticles(@RequestParam(defaultValue = "1") @ApiParam(value = "页码", defaultValue = "1")int page,
                                 HttpServletRequest request){
         try {
@@ -182,7 +182,7 @@ public class ArticleController {
     }
 
     @ApiOperation(value = "获取当前用户带标签的文章个数", notes = "获取当前用户带标签的文章个数，用于分页查询")
-    @GetMapping("/getMyLabelsSize")
+    @PostMapping("/getMyLabelsSize")
     public Result getMyLabelsSize(@RequestParam("labels") @ApiParam(value = "标签列表，用逗号分割", required = true)String labels,
                                   HttpServletRequest request){
         try {
@@ -268,7 +268,7 @@ public class ArticleController {
     }
 
     @ApiOperation(value = "修改点赞" ,notes = "点赞数量修改")
-    @GetMapping("/updateLike")
+    @PostMapping("/updateLike")
     public Result updateLike(@RequestParam Long articleid ,@RequestParam int like){
         articleService.updateLike(articleid,like);
         log.info("文章{}  点赞更新：{}",articleid,like);

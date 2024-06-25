@@ -187,6 +187,7 @@ public class ArticleController {
     @GetMapping("/getSize")
     public Result getSize(){
         Integer size=articleService.getSize();
+        log.info("文章个数：{}",size);
         return Result.success(size);
     }
 

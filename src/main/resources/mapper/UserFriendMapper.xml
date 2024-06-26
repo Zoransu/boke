@@ -9,7 +9,7 @@
 
     <select id="getMyFriends" resultType="com.example.boke.Dto.UserFriendsDto" >
         SELECT
-            uf.user_id as user_friend_id,
+            uf.user_friend_id as user_friend_id,
             u.user_profile_photo AS user_friend_profile_photo,
             u.user_name AS user_friend_name,
             uf.user_note AS friend_note

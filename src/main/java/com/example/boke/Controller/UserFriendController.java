@@ -84,7 +84,7 @@ public class UserFriendController {
         }
     }
 
-
+    @ApiOperation(value = "修改好友备注" ,notes = "修改好友备注")
     @PostMapping("/updateFriendNoteName")
     public Result updateFriendNoteName(@RequestParam @ApiParam(value = "好友id")Long friendId,
                                        @RequestParam @ApiParam(value = "好友昵称")String userFriendNoteName,

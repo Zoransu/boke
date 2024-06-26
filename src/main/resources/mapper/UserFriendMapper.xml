@@ -3,7 +3,23 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.boke.Mapper.UserFriendMapper">
     <insert id="add" >
-        insert into user_friends (id,user_id,user_friend_id,user_note,user_status)
-        value (#{id},#{userId},#{userFriendId},#{userNote},#{userStatus})
+        INSERT INTO user_friends (id,user_id,user_friend_id,user_note,user_status)
+        VALUE (#{id},#{userId},#{userFriendId},#{userNote},#{userStatus})
     </insert>
+
+    <select id="getMyFriends" resultType="com.example.boke.Dto.UserFriendsDto" >
+        SELECT
+            uf.user_id as user_friend_id,
+            u.user_profile_photo AS user_friend_profile_photo,
+            u.user_name AS user_friend_name,
+            uf.user_note AS friend_note
+        FROM user_friends uf
+        JOIN
+            user u ON uf.user_friend_id = u.user_id
+        WHERE uf.user_id=#{userId}
+    </select>
+
+    <select id="isMyFriend" resultType="com.example.boke.pojo.UserFriends">
+        SELECT * FROM user_friends WHERE user_id=#{userId} AND user_friend_id=#{friendId}
+    </select>
 </mapper>

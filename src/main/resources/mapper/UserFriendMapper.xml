@@ -22,4 +22,8 @@
     <select id="isMyFriend" resultType="com.example.boke.pojo.UserFriends">
         SELECT * FROM user_friends WHERE user_id=#{userId} AND user_friend_id=#{friendId}
     </select>
+
+    <update id="updateFriendNoteName">
+        UPDATE user_friends SET user_note=#{userFriendNoteName} WHERE user_id=#{userId} AND user_friend_id=#{friendId}
+    </update>
 </mapper>

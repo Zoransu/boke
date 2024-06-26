@@ -30,6 +30,11 @@ public class UserFriendServiceImpl implements UserFriendService {
     public UserFriends isMyFriend(Long userId, Long friendId) {
         return userFriendMapper.isMyFriend(userId,friendId);
     }
+
+    @Override
+    public void updateFriendNoteName(Long userId, Long friendId, String userFriendNoteName) {
+        userFriendMapper.updateFriendNoteName(userId,friendId,userFriendNoteName);
+    }
 }
 
 

@@ -11,4 +11,6 @@ public interface UserFriendService {
     List<UserFriendsDto> getMyFriends(Long userId);
 
     UserFriends isMyFriend(Long userId, Long friendId);
+
+    void updateFriendNoteName(Long userId, Long friendId, String userFriendNoteName);
 }

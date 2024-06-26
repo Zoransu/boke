@@ -83,4 +83,24 @@ public class UserFriendController {
             return Result.error("查看好友关系失败：" + e.getMessage());
         }
     }
+
+
+    @PostMapping("/updateFriendNoteName")
+    public Result updateFriendNoteName(@RequestParam @ApiParam(value = "好友id")Long friendId,
+                                       @RequestParam @ApiParam(value = "好友昵称")String userFriendNoteName,
+                                       HttpServletRequest request
+                                       ){
+        try {
+            Long userId = (Long) request.getAttribute("userId");
+            if (userId == null) {
+                return Result.error("用户未登录或会话已过期");
+            }
+            userFriendService.updateFriendNoteName(userId,friendId,userFriendNoteName);
+            log.info("好友 {} 修改备注 {}",friendId,userFriendNoteName);
+            return Result.success("修改备注成功");
+        }catch (Exception e){
+            log.error("修改备注失败: {}", e.getMessage());
+            return Result.error("修改备注失败：" + e.getMessage());
+        }
+    }
 }

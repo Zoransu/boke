@@ -64,28 +64,38 @@
 
     <!--使用权重计算并将结果进行分组,查询前十热点文章-->
     <select id="getHotTen" resultMap="ArticleDetailResultMap">
+        WITH top_articles AS (
+            SELECT
+                a.article_id,a.article_title,a.article_content,a.article_date,a.article_like_count,
+                u.user_id AS author_id,u.user_name AS author_name,u.user_profile_photo AS author_photo
+            FROM articles a
+                     LEFT JOIN user u ON a.user_id = u.user_id
+            ORDER BY (a.article_comment_count * 2 + a.article_like_count) DESC, a.article_date DESC
+            LIMIT 10
+        )
         SELECT
-            a.article_id, a.article_title, a.article_content, a.article_date,a.article_like_count,
-            u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
-            c.comment_id, c.comment_content, c.comment_date, cu.user_id as commenter_id, cu.user_name as commenter_name,
-            cu.user_profile_photo as commenter_photo,
-            l.label_id, l.label_name
-        FROM articles a
-                 LEFT JOIN user u ON a.user_id = u.user_id
-                 LEFT JOIN comments c ON a.article_id = c.article_id
+            ta.article_id,ta.article_title,ta.article_content,ta.article_date,ta.article_like_count,ta.author_id,ta.author_name,ta.author_photo,
+            c.comment_id,c.comment_content,c.comment_date,cu.user_id AS commenter_id,cu.user_name AS commenter_name,cu.user_profile_photo AS commenter_photo,
+            l.label_id,l.label_name
+        FROM top_articles ta
+                 LEFT JOIN comments c ON ta.article_id = c.article_id
                  LEFT JOIN user cu ON c.user_id = cu.user_id
-                 LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
-                 LEFT JOIN labels l ON sal.label_id = l.label_id
-        ORDER BY (a.article_comment_count * 2 + a.article_like_count) DESC, a.article_date DESC
-        LIMIT 10
+                 LEFT JOIN set_article_label sal ON ta.article_id = sal.article_id
+                 LEFT JOIN labels l ON sal.label_id = l.label_id;
     </select>
 
     <select id="getArticles" resultMap="ArticleDetailResultMap">
+        WITH sorted_articles AS (
+            SELECT a.article_id
+            FROM articles a
+            ORDER BY a.article_date DESC
+            LIMIT #{offset}, 4
+        )
         SELECT
-            a.article_id, a.article_title, a.article_content, a.article_date,a.article_like_count,
-            u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
-            c.comment_id, c.comment_content, c.comment_date, cu.user_id as commenter_id, cu.user_name as commenter_name,
-            cu.user_profile_photo as commenter_photo,
+            a.article_id, a.article_title, a.article_content, a.article_date, a.article_like_count,
+            u.user_id AS author_id, u.user_name AS author_name, u.user_profile_photo AS author_photo,
+            c.comment_id, c.comment_content, c.comment_date, cu.user_id AS commenter_id, cu.user_name AS commenter_name,
+            cu.user_profile_photo AS commenter_photo,
             l.label_id, l.label_name
         FROM articles a
                  LEFT JOIN user u ON a.user_id = u.user_id
@@ -93,11 +103,23 @@
                  LEFT JOIN user cu ON c.user_id = cu.user_id
                  LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
                  LEFT JOIN labels l ON sal.label_id = l.label_id
-        ORDER BY a.article_date DESC
-        LIMIT #{offset},4
+        WHERE a.article_id IN (SELECT article_id FROM sorted_articles)
+        ORDER BY a.article_date DESC;
     </select>
 
     <select id="getArticlesByLabels" resultMap="ArticleDetailResultMap">
+        WITH sorted_articles AS (
+        SELECT a.article_id
+        FROM articles a
+        LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
+        LEFT JOIN labels l ON sal.label_id = l.label_id
+        WHERE l.label_name IN
+        <foreach item="label" collection="labelList" open="(" separator="," close=")">
+            #{label}
+        </foreach>
+        ORDER BY a.article_date DESC
+        LIMIT #{offset}, 4
+        )
         SELECT
         a.article_id, a.article_title, a.article_content, a.article_date, a.article_like_count,
         u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
@@ -110,18 +132,26 @@
         LEFT JOIN user cu ON c.user_id = cu.user_id
         LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
         LEFT JOIN labels l ON sal.label_id = l.label_id
-        WHERE
-        l.label_name IN
-        <foreach item="label" collection="labelList" open="(" separator="," close=")">
-            #{label}
-        </foreach>
-        ORDER BY
-        a.article_date DESC
-        LIMIT #{offset},4
+        WHERE a.article_id IN (SELECT article_id FROM sorted_articles)
+        ORDER BY a.article_date DESC;
     </select>
 
 
     <select id="getMyArticlesByLabels" resultMap="ArticleDetailResultMap">
+        WITH filtered_articles AS (
+        SELECT a.article_id
+        FROM articles a
+        JOIN user u ON a.user_id = u.user_id
+        LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
+        LEFT JOIN labels l ON sal.label_id = l.label_id
+        WHERE l.label_name IN
+        <foreach item="label" collection="labelList" open="(" separator="," close=")">
+            #{label}
+        </foreach>
+        AND u.user_id = #{userId}
+        ORDER BY a.article_date DESC
+        LIMIT #{offset}, 4
+        )
         SELECT
         a.article_id, a.article_title, a.article_content, a.article_date, a.article_like_count,
         u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
@@ -135,15 +165,8 @@
         LEFT JOIN user cu ON c.user_id = cu.user_id
         LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
         LEFT JOIN labels l ON sal.label_id = l.label_id
-        WHERE
-        l.label_name IN
-        <foreach item="label" collection="labelList" open="(" separator="," close=")">
-            #{label}
-        </foreach>
-        and u.user_id=#{userId}
-        ORDER BY
-        a.article_date DESC
-        LIMIT #{offset},4
+        WHERE a.article_id IN (SELECT article_id FROM filtered_articles)
+        ORDER BY a.article_date DESC;
     </select>
 
     <!--删除文章-->
@@ -153,6 +176,14 @@
 
 
     <select id="getArticleByUserId" resultMap="ArticleDetailResultMap">
+        WITH sorted_articles AS (
+            SELECT a.article_id
+            FROM articles a
+            LEFT JOIN user u ON a.user_id = u.user_id
+            WHERE u.user_id=#{userId}
+            ORDER BY a.article_date DESC
+            LIMIT #{offset}, 4
+        )
         SELECT
             a.article_id, a.article_title, a.article_content, a.article_date,a.article_like_count,
             u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
@@ -164,13 +195,19 @@
                  LEFT JOIN user cu ON c.user_id = cu.user_id
                  LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
                  LEFT JOIN labels l ON sal.label_id = l.label_id
-        WHERE u.user_id=#{userId}
+        WHERE a.article_id IN (SELECT article_id FROM sorted_articles)
         ORDER BY a.article_date DESC
-        LIMIT #{offset},4
     </select>
 
 
     <select id="getArticlesBySearch" resultMap="ArticleDetailResultMap">
+        WITH sorted_articles AS (
+            SELECT a.article_id
+            FROM articles a
+            WHERE LOCATE(#{keyword},a.article_title)>0
+            ORDER BY a.article_date DESC
+            LIMIT #{offset}, 4
+        )
         SELECT
             a.article_id, a.article_title, a.article_content, a.article_date,a.article_like_count,
             u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
@@ -182,12 +219,19 @@
                  LEFT JOIN user cu ON c.user_id = cu.user_id
                  LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
                  LEFT JOIN labels l ON sal.label_id = l.label_id
-        WHERE LOCATE(#{keyword},a.article_title)>0
+        WHERE  a.article_id IN (SELECT article_id FROM sorted_articles)
         ORDER BY a.article_date DESC
-        LIMIT #{offset},4
     </select>
 
     <select id="getMyArticlesBySearch" resultMap="ArticleDetailResultMap">
+        WITH sorted_articles AS (
+            SELECT a.article_id
+            FROM articles a
+            WHERE LOCATE(#{keyword},a.article_title)>0
+            AND #{userId} = a.user_id
+            ORDER BY a.article_date DESC
+            LIMIT #{offset}, 4
+        )
         SELECT
             a.article_id, a.article_title, a.article_content, a.article_date,a.article_like_count,
             u.user_id as author_id, u.user_name as author_name, u.user_profile_photo as author_photo,
@@ -199,9 +243,8 @@
                  LEFT JOIN user cu ON c.user_id = cu.user_id
                  LEFT JOIN set_article_label sal ON a.article_id = sal.article_id
                  LEFT JOIN labels l ON sal.label_id = l.label_id
-        WHERE LOCATE(#{keyword},a.article_title)>0 and #{userId} = a.user_id
+        WHERE a.article_id IN (SELECT article_id FROM sorted_articles)
         ORDER BY a.article_date DESC
-        LIMIT #{offset},4
     </select>
 
     <select id="getAllTitle" resultType="string">
